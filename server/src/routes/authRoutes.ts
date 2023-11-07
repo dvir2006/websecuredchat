@@ -1,11 +1,11 @@
 import express, { Request, Response } from 'express';
 import authController from '../controllers/authController';
 
-const router = express.Router();
-router.post('/register', authController.registerUser);
+const authRouter = express.Router();
+authRouter.post('/register', authController.registerUser);
 
-router.post('/login', authController.loginUser);
+authRouter.post('/login', authController.loginUser);
 
-router.get('/all-users', authController.getAllUsers);
+authRouter.get('/all-users', authController.getAllUsers);
 
-export default router;
+export default authRouter;
