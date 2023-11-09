@@ -1,19 +1,22 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import PageNotFound from './pages/PageNotFound';
+import LoginPage from './pages/LoginPage';
+import MainPage from './pages/MainPage';
+import { auth, username } from './utils/signals';
+import RegisterPage from './pages/RegisterPage';
 
 function App() {
   return (
     <div className="App">
       <BrowserRouter>
-      <Routes>
-        <Route path="/" element={!isLoggedIn ? <LoginPage onLogin={HandleLogin} /> : <MainPage onLogout={HandleLogout} />} />
-        <Route path="/login" element={!isLoggedIn ? <LoginPage onLogin={HandleLogin} /> : <MainPage onLogout={HandleLogout} />} />
-        <Route path="/signup" element={<SignupPage onSignup={HandleSignup} />} />
-        <Route path="*" element={<PageNotFound/>} />
-      </Routes>
+        <Switch>
+          <Route path="/" element={!auth.value.isLoggedIn ? <LoginPage /> : <MainPage user={username} />} />
+          <Route path="/login" element={!auth.value.isLoggedIn ? <LoginPage /> : <MainPage user={username}/>} />
+          <Route path="/signup" element={<RegisterPage />} />
+          <Route path="*" element={<PageNotFound/>} />
+        </Switch>
       </BrowserRouter>
 
     </div>
