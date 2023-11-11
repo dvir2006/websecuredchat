@@ -4,10 +4,9 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
 export const registerUser = async (req: Request, res: Response) => {
-    const { name, email, password } = req.body;
-  
+    const { username, email, password } = req.body;
     try {
-        if (!name || !email || !password) {
+        if (!username || !email || !password) {
             return res.status(400).json({ message: 'Please fill all the requiered fields <3' });
         }
         const emailRegex = /^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/;
@@ -20,21 +19,17 @@ export const registerUser = async (req: Request, res: Response) => {
         }
     
         const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/;
-        if (!passwordRegex.test(password)) {
-          return res.status(400).json({ message: 'Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, and one digit' });
+        if (!passwordRegex.test(password)) {   
+            return res.status(400).json({ message: 'Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, and one digit' });
         }
-
         const saltRounds = await bcrypt.genSalt(10); 
         const hashedPassword = await bcrypt.hash(password, saltRounds);
-    
         const newUser = new UserModel({
-            name,
+            username,
             email,
             password: hashedPassword,
         });
-    
         await newUser.save();
-    
         res.status(201).json({ message: 'Registration successful' });
         } catch (error) {
         res.status(500).json({ message: 'Internal server error' });
