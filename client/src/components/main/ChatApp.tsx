@@ -1,15 +1,20 @@
 import { Button } from "@mui/material";
-import { username } from "../../utils/signals";
+import { auth } from "../../utils/signals";
 import { MainPageProps } from "../../utils/types";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 const ChatApp: React.FC<MainPageProps> = ({user}) => { 
+    const { logout } = useAuth();
+    const navigate = useNavigate();
     const onLogout = () => {
-        const token = localStorage.getItem('jwtToken');
-        
+        localStorage.removeItem('jwtToken');
+        logout();
+        navigate("/login");
     };
     return (
         <div>
-            <h1>Hello {username.value}</h1>
+            <h1>Hello {user}</h1>
             <Button variant="contained" onClick={onLogout}>Logout</Button>
         </div>
     );

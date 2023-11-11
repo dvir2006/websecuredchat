@@ -2,6 +2,7 @@ import React from "react"
 import Header from "../components/const/Header";
 import Footer from "../components/const/Footer";
 import { MainPageProps } from "../utils/types";
+import ChatApp from "../components/main/ChatApp";
 
 
 const LoginPage: React.FC<MainPageProps> = ({user}) => { 
@@ -9,7 +10,7 @@ const LoginPage: React.FC<MainPageProps> = ({user}) => {
         <div>
             <Header />
             <main>
-                HELLO {user.username}
+                <ChatApp user={user}/>
             </main>
             <Footer />
         </div>
