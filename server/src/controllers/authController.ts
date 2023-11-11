@@ -57,7 +57,7 @@ export const loginUser = async (req: Request, res: Response) =>
         if (!passwordMatch) {
             return res.status(400).json({ message: 'Invalid email or password' });
         }
-        const token = jwt.sign({ _id: user._id }, jwtKey, {expiresIn: '7d'});
+        const token = jwt.sign({ _id: user._id }, jwtKey, {expiresIn: '3d'});
         
         res.header('auth-token', token).json({ token, message: 'Login successful' });
         } catch (error) {
@@ -76,4 +76,13 @@ export const getAllUsers = async (req: Request, res: Response) => {
     }
 };
 
-export default {registerUser, loginUser, getAllUsers};
+export const checkUserAuth = async (req: Request, res: Response) => {
+    try {
+        res.status(200).json({ message: 'Valid user' });
+    } catch (error) 
+    {
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+export default {registerUser, loginUser, getAllUsers,checkUserAuth};
