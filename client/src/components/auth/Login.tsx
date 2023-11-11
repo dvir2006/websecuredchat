@@ -1,29 +1,38 @@
 import { Alert, Box, Button, Link, TextField } from "@mui/material";
 import { LoginProps } from "../../utils/types";
 import { auth, email, error, password } from "../../utils/signals";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { PostRequest, apiUrl } from "../../services/Server";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { effect } from "@preact/signals";
+import { useAuth } from "../../context/AuthContext";
 
 const Login: React.FC<LoginProps> = () => {
-    const history = useHistory();
+    const navigate = useNavigate();
+
+    const [canDisplayError,setCanDisplayError] = useState(false);
+    
+    const {login} = useAuth();
 
     useEffect(() => {
-        error.value = "";
+        setCanDisplayError(false);
     }, []);
+    
 
-    const onSubmit = async () =>{
-        error.value = "";
+    const onSubmit = async (event:React.FormEvent<HTMLFormElement>) =>{
+        event.preventDefault();
+        setCanDisplayError(false);
         const response = await PostRequest(`${apiUrl}/auth/login`, {email: email.value, password:password.value});
         if(response.ok) {
             password.value = "";
-            const jsonBody = await response.json();
-            localStorage.setItem('jwtToken', jsonBody.token);
-            auth.value.isLoggedIn = true;
-            history.push('/'); 
+            const token = (await response.json()).token;
+            localStorage.setItem('jwtToken', token);
+            login();
+            navigate('/'); 
         }
         else{
-            error.value =  await response.text();
+            error.value =  (await response.json()).message;
+            setCanDisplayError(true);
         }
     }
     return (
@@ -31,19 +40,21 @@ const Login: React.FC<LoginProps> = () => {
             <Box component="form" onSubmit={onSubmit}>
                 <TextField
                     required
-                    value={email.value}
+                    value={email}
                     id="outlined-required"
                     type="email"
                     label="Email Address"
+                    onChange={(e) => email.value = e.target.value}
                 />
                 <TextField
                     required
-                    value={password.value}
+                    value={password}
                     id="outlined-required"
                     label="Password"
                     type="password"
+                    onChange={(e) => password.value = e.target.value}
                 />
-                <Alert severity="error" hidden={error.value===''}>{error.value}</Alert>
+                {canDisplayError &&<Alert severity="error">{error.value}</Alert>}
                 <Link href="/register">Don't have an account, Click to Register</Link>
                 <Button variant="contained" type="submit">Submit</Button>
             </Box>
