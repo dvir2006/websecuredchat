@@ -7,7 +7,7 @@ authRouter.post('/register', authController.registerUser);
 
 authRouter.post('/login', authController.loginUser);
 
-authRouter.post('/check-user',authCheckMiddleware , authController.checkUserAuth);
+authRouter.get('/check-user',authCheckMiddleware , authController.checkUserAuth);
 
 authRouter.get('/all-users', authController.getAllUsers);
 
