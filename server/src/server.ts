@@ -2,6 +2,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 require('dotenv').config()
 import authRouter from './routes/authRoutes';
+import chatRouter from './routes/chatRoutes';
 import cors from 'cors';
 
 
@@ -13,6 +14,7 @@ const port = process.env.PORT || 3000;
 const mongodbUri = process.env.MONGODB_URI || '';
 
 app.use("/api/auth", authRouter);
+app.use("/api/chat", chatRouter);
 
 app.get('/', (req, res) => {
   res.send('Noder neder secured server!');
