@@ -23,7 +23,6 @@ const Register: React.FC<RegisterProps> = () => {
         const response = await PostRequest(`${apiUrl}/auth/register`, {username: username.value, email: email.value, password:password.value});
         if(response.ok) {
             password.value = "";
-            auth.value.isLoggedIn = true;
             navigate('/'); 
         }
         else{

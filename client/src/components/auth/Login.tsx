@@ -1,6 +1,6 @@
 import { Alert, Box, Button, Link, TextField } from "@mui/material";
 import { LoginProps } from "../../utils/types";
-import { auth, email, error, password } from "../../utils/signals";
+import { auth, email, error, password, username } from "../../utils/signals";
 import { useNavigate } from "react-router-dom";
 import { PostRequest, apiUrl } from "../../services/Server";
 import { useEffect, useState } from "react";
@@ -25,9 +25,11 @@ const Login: React.FC<LoginProps> = () => {
         const response = await PostRequest(`${apiUrl}/auth/login`, {email: email.value, password:password.value});
         if(response.ok) {
             password.value = "";
-            const token = (await response.json()).token;
+            const data = await response.json();
+            const token = data.token;
+            username.value = data.username;
             localStorage.setItem('jwtToken', token);
-            login();
+            login(data.userId);
             navigate('/'); 
         }
         else{

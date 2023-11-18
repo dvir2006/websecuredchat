@@ -3,7 +3,8 @@ import { ProtectedGetRequest, apiUrl } from '../services/Server';
 
 interface AuthContextData {
   isAuthenticated: boolean;
-  login: () => void;
+  userId: string;
+  login: (uid:string) => void;
   logout: () => void;
 }
 
@@ -15,6 +16,7 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [userId, setUserId] = useState<string>("");
 
   useEffect(() => {
     const checkUser = async () => {
@@ -39,8 +41,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       checkUser();
   }, []);
 
-  const login = () => {
+  const login = (uid:string) => {
     setIsAuthenticated(true);
+    setUserId(uid);
   };
 
   const logout = () => {
@@ -51,6 +54,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     isAuthenticated,
     login,
     logout,
+    userId
   };
 
   return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;
