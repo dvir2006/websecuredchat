@@ -58,7 +58,25 @@ const ChatApp: React.FC<MainPageProps> = ({user}) => {
     const toggleSidebar = () => {
         setIsSidebarOpen(!isSidebarOpen);
     };
+
+    const sendMessageToServer = async (user: any, message: string) => {
+        if (message.trim() === '') return;
     
+        const requestBody = {
+            senderId: userId, 
+            receiverId: user._id, 
+            messageContent: message,
+        };
+        const jwtToken = localStorage.getItem('jwtToken') || "";
+        const response = await ProtectedPostRequest(`${apiUrl}/chat/send-message`, requestBody, jwtToken);
+    
+        if (response.ok) {
+            
+        } else {
+            alert("Error trying to send message");
+            onLogout();
+        }
+    };
     
     return (
         <div>

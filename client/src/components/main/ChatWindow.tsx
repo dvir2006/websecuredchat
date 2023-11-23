@@ -1,16 +1,24 @@
-import { Box, Drawer, List, ListItem, ListItemText } from "@mui/material";
+import { useState } from 'react';
+import { Box, List, ListItem, ListItemText, TextField, Button } from "@mui/material";
 import { ChatWindowProps, MessageType } from "../../utils/types";
 import { formatDate } from "../../utils/formatDate";
 import { useAuth } from "../../context/AuthContext";
 import { username } from "../../utils/signals";
-
+import { PostRequest, ProtectedPostRequest , apiUrl } from "../../services/Server";
 
 const ChatApp: React.FC<ChatWindowProps> = ({chat,currUser}) => { 
     const {userId} = useAuth();
+    const [newMessage, setNewMessage] = useState('');
+
     const idToName = (sender: string) => {
         if(userId === sender) return username.value;
         return currUser.username;
     }
+
+    const handleMessageSend = () => {
+        chat.sendMessageToServer(newMessage, currUser);
+        setNewMessage('');
+      };
 
     return (
         <Box>
@@ -25,7 +33,21 @@ const ChatApp: React.FC<ChatWindowProps> = ({chat,currUser}) => {
                 </ListItem>
                 ))}
             </List>
-            {/*add input field*/}
+            
+            <Box display="flex">
+                <TextField
+                    value={newMessage}
+                    onChange={(e) => setNewMessage(e.target.value)}
+                    label="Type your message"
+                    variant="outlined"
+                    fullWidth
+                    margin="normal"
+                />
+                <Button variant="contained" color="primary" onClick={handleMessageSend}>
+                    Send
+                </Button>
+            </Box>
+            
         </Box>
     );
 };
