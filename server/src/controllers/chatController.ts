@@ -26,7 +26,23 @@ const checkExistingUsers = async (senderId: string, receiverId: string) => {
 }
 
 const sendMessage = async (req: Request, res: Response) => {
-    res.status(500).json({ message: 'Internal server error' });
+    try {
+        const { senderId, receiverId, messageContent } = req.body;
+        let chat = await ChatModel.findOne({ users: { $all: [senderId, receiverId] } });
+        if (!chat) {
+            chat = await ChatModel.create({
+                type: "private",
+                users: [senderId, receiverId],
+                messages: [{ sender: senderId, content: messageContent }]
+            });
+        } else {
+            chat.messages.push({ sender: senderId, content: messageContent, timestamp: new Date()});
+            await chat.save();
+        }
+        res.status(200).json(chat);
+    } catch (error) {
+        res.status(500).json({ message: 'Internal server error' });
+    }
 }
 
 export default {getChat, sendMessage};
