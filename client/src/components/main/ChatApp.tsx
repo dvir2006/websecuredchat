@@ -34,7 +34,6 @@ const ChatApp: React.FC<MainPageProps> = ({user}) => {
     const fetchChat = async (user: any) => {
         const jwtToken = localStorage.getItem('jwtToken') || "";
         const response = await ProtectedPostRequest(`${apiUrl}/chat/get-chat`, {type:"private", senderId: userId, receiverId: user._id},jwtToken);
-        console.log(user._id, userId)
         if(response.ok) {
             const data = await response.json();
             setChat(data);
@@ -83,7 +82,7 @@ const ChatApp: React.FC<MainPageProps> = ({user}) => {
             <h1>Hello {user}</h1>
             <div>
                 <ChatList open={isSidebarOpen} onClose={toggleSidebar} users={users} onChat={fetchChat} />
-                <ChatWindow chat={chat} currUser={currUser} />
+                <ChatWindow chat={chat} currUser={currUser} onSendMessage={sendMessageToServer}/>
                 <Button variant="contained" onClick={toggleSidebar}>Toggle Sidebar</Button>
             </div>
             <Button variant="contained" onClick={onLogout}>Logout</Button>

@@ -6,7 +6,7 @@ import { useAuth } from "../../context/AuthContext";
 import { username } from "../../utils/signals";
 import { PostRequest, ProtectedPostRequest , apiUrl } from "../../services/Server";
 
-const ChatApp: React.FC<ChatWindowProps> = ({chat,currUser}) => { 
+const ChatWindow: React.FC<ChatWindowProps> = ({chat, currUser, onSendMessage}) => { 
     const {userId} = useAuth();
     const [newMessage, setNewMessage] = useState('');
 
@@ -16,7 +16,7 @@ const ChatApp: React.FC<ChatWindowProps> = ({chat,currUser}) => {
     }
 
     const handleMessageSend = () => {
-        chat.sendMessageToServer(newMessage, currUser);
+        onSendMessage(currUser, newMessage);
         setNewMessage('');
       };
 
@@ -28,7 +28,7 @@ const ChatApp: React.FC<ChatWindowProps> = ({chat,currUser}) => {
                 <ListItem key={index}>
                     <ListItemText
                     primary={message.content}
-                    secondary={`${idToName(message.sender)}, ${formatDate(message.timestamp)}`} 
+                    secondary={`${idToName(message.sender)}, ${formatDate(new Date(message.timestamp))}`} 
                     />
                 </ListItem>
                 ))}
@@ -52,4 +52,4 @@ const ChatApp: React.FC<ChatWindowProps> = ({chat,currUser}) => {
     );
 };
 
-export default ChatApp;
+export default ChatWindow;

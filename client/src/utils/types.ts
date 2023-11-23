@@ -17,7 +17,8 @@ export interface ChatAppProps{
 
 export interface ChatWindowProps{
     chat: any,
-    currUser: any
+    currUser: any,
+    onSendMessage: (user: any, message: string) => void
 }
 export interface MessageType{
     sender: string,

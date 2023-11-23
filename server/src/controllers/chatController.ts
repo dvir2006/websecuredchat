@@ -36,7 +36,7 @@ const sendMessage = async (req: Request, res: Response) => {
                 messages: [{ sender: senderId, content: messageContent }]
             });
         } else {
-            chat.messages.push({ sender: senderId, content: messageContent, timestamp: new Date()});
+            chat.messages.push({ sender: senderId, content: messageContent, timestamp: new Date() });
             await chat.save();
         }
         res.status(200).json(chat);

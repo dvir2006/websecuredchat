@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
 
-
 const ChatSchema = new mongoose.Schema(
     {
         type: {
@@ -24,7 +23,7 @@ const ChatSchema = new mongoose.Schema(
             {
               sender: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
               content: String,
-              timestamp: { type: Date, default: Date.now }
+              timestamp: { type: Date, default: new Date()}
             }
         ],
     },
