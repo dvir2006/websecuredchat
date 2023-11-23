@@ -54,7 +54,7 @@ export const loginUser = async (req: Request, res: Response) =>
         }
         const token = jwt.sign({ _id: user._id }, jwtKey, {expiresIn: '3d'});
         
-        res.header('auth-token', token).json({ token, message: 'Login successful', userId: user._id});
+        res.header('auth-token', token).json({ token, message: 'Login successful', userId: user._id, username: user.username });
         } catch (error) {
         res.status(500).json({ message: 'Internal server error' });
     }
