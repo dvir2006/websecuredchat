@@ -13,8 +13,8 @@ const ChatApp: React.FC<MainPageProps> = ({user}) => {
     const navigate = useNavigate();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [users,setUsers] = useState([]);
-    const [chat,setChat] = useState({});
-    const [currUser,setCurrUser] = useState();
+    const [chat,setChat] = useState({messages: []});
+    const [currUser,setCurrUser] = useState({username: ""});
     const onLogout = () => {
         localStorage.removeItem('jwtToken');
         logout();
@@ -33,7 +33,8 @@ const ChatApp: React.FC<MainPageProps> = ({user}) => {
 
     const fetchChat = async (user: any) => {
         const jwtToken = localStorage.getItem('jwtToken') || "";
-        const response = await ProtectedPostRequest(`${apiUrl}/chat/get-chat`, {type:"private", senderId: userId, reciverId: user._id},jwtToken);
+        const response = await ProtectedPostRequest(`${apiUrl}/chat/get-chat`, {type:"private", senderId: userId, receiverId: user._id},jwtToken);
+        console.log(user._id, userId)
         if(response.ok) {
             const data = await response.json();
             setChat(data);
@@ -45,7 +46,7 @@ const ChatApp: React.FC<MainPageProps> = ({user}) => {
     useEffect( () => {
         const fetchData = async () => {
             await fetchAllUsers();
-            if(currUser){
+            if(currUser.username !== ""){
                 await fetchChat(currUser);
             }
         };

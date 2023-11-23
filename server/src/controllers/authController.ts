@@ -54,7 +54,7 @@ export const loginUser = async (req: Request, res: Response) =>
         }
         const token = jwt.sign({ _id: user._id }, jwtKey, {expiresIn: '3d'});
         
-        res.header('auth-token', token).json({ token, message: 'Login successful' });
+        res.header('auth-token', token).json({ token, message: 'Login successful', userId: user._id});
         } catch (error) {
         res.status(500).json({ message: 'Internal server error' });
     }
@@ -73,7 +73,8 @@ export const getAllUsers = async (req: Request, res: Response) => {
 
 export const checkUserAuth = async (req: Request, res: Response) => {
     try {
-        res.status(200).json({ message: 'Valid user' });
+        const { userId } = req.body;
+        res.status(200).json({ message: 'Valid user', userId: userId });
     } catch (error) 
     {
         res.status(500).json({ message: 'Internal server error' });

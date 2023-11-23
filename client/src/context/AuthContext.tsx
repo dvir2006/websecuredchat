@@ -27,9 +27,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 const response = await ProtectedGetRequest(`${apiUrl}/auth/check-user`,jwtToken);
                 if(response.ok || response.status === 304) {
                     setIsAuthenticated(true);
+                    const uid = (await response.json()).userId;
+                    setUserId(uid);
                 }
                 else{
-                    setIsAuthenticated(true);
+                    setIsAuthenticated(false);
                 }
             } else {
                 setIsAuthenticated(false);

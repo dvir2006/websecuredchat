@@ -9,7 +9,7 @@ const ChatApp: React.FC<ChatWindowProps> = ({chat,currUser}) => {
     const {userId} = useAuth();
     const idToName = (sender: string) => {
         if(userId === sender) return username.value;
-        return currUser.name;
+        return currUser.username;
     }
 
     return (
@@ -25,6 +25,7 @@ const ChatApp: React.FC<ChatWindowProps> = ({chat,currUser}) => {
                 </ListItem>
                 ))}
             </List>
+            {/*add input field*/}
         </Box>
     );
 };

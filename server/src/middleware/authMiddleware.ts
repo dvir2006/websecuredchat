@@ -10,7 +10,8 @@ const authCheckMiddleware = (req:Request, res:Response, next:NextFunction) => {
     }
   
     try {
-      jwt.verify(token, jwtKey);
+      const decodedToken = jwt.verify(token, jwtKey);
+      req.body.userId = decodedToken;
       next();
     } catch (error) {
       return res.status(401).json({ message: 'Unauthorized: Invalid token' });
