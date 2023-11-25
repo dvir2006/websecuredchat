@@ -1,5 +1,5 @@
 import { Button } from "@mui/material";
-import { auth } from "../../utils/signals";
+import { username } from "../../utils/signals";
 import { MainPageProps } from "../../utils/types";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
@@ -70,7 +70,7 @@ const ChatApp: React.FC<MainPageProps> = ({user}) => {
         const response = await ProtectedPostRequest(`${apiUrl}/chat/send-message`, requestBody, jwtToken);
     
         if (response.ok) {
-            
+            fetchChat(currUser);
         } else {
             alert("Error trying to send message");
             onLogout();
