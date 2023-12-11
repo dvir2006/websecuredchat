@@ -5,8 +5,14 @@ import userModel from "../models/user";
 const getChat = async (req: Request, res: Response) => {
     try {
         const { type, senderId, receiverId } = req.body;
+        if(!await checkExistingUser(senderId)) throw "";
+        if(type === "group") {
+            const group = await ChatModel.findById(receiverId);
+            if(!group) throw "";
+            res.status(200).json(group);
+        }
         if (type !== "private") throw "";
-        if(!await checkExistingUsers(senderId, receiverId)) throw "";
+        if(!await checkExistingUser(receiverId) ) throw "";
         let chat = await ChatModel.findOne({users:{$all: [senderId,receiverId]}});
         if (!chat) {  
             const newChat = await ChatModel.create({type: "private", users: [senderId,receiverId], messages: []});
@@ -19,10 +25,35 @@ const getChat = async (req: Request, res: Response) => {
     }
 }
 
-const checkExistingUsers = async (senderId: string, receiverId: string) => {
-    const sender = await userModel.findById(senderId);
-    const receiver = await userModel.findById(receiverId);
-    return !!sender && !!receiver;
+const checkExistingUser = async (user: string) => {
+    const u = await userModel.findById(user);
+    return !!u;
+}
+
+const createGroup = async (req: Request, res: Response) => {
+    try {
+        const { adminId, name, users } = req.body;
+        if(!await checkExistingGroupUsers(adminId, users)) throw "";   
+        const chat = await ChatModel.create({
+            type: "group",
+            name: name,
+            admin_uid: adminId,
+            users: [adminId, ... users],
+            messages: []
+        });
+        await chat.save();
+        res.status(200).json({message:"success!"});
+    } catch (error) {
+        res.status(500).json({ message: 'Internal server error' });
+    }
+}
+
+const checkExistingGroupUsers = async (senderId: string, users: string) => {
+    if(! await checkExistingUser(senderId)) return false;
+    for(const user of users) {
+        if(! await checkExistingUser(user)) return false;
+    }
+    return true;
 }
 
 const sendMessage = async (req: Request, res: Response) => {
@@ -45,4 +76,21 @@ const sendMessage = async (req: Request, res: Response) => {
     }
 }
 
-export default {getChat, sendMessage};
+
+const getGroups = async (req: Request, res: Response) => {
+    try {
+        const { userId} = req.body;
+        if(!await checkExistingUser(userId)) throw "";   
+        const chats = await ChatModel.find({$and: [ { users: { $in: userId } }, { type: 'group' } ]});
+        const formattedChats = chats.map(chat => ({
+            name: chat.name,
+            uid: chat.id
+          }));
+        res.status(200).json({chats: formattedChats});
+    } catch (error) {
+        res.status(500).json({ message: 'Internal server error' });
+    }
+}
+
+
+export default {getChat, sendMessage, createGroup,getGroups};
