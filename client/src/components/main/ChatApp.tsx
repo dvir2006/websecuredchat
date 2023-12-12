@@ -13,6 +13,7 @@ const ChatApp: React.FC<MainPageProps> = ({user}) => {
     const navigate = useNavigate();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [users,setUsers] = useState([]);
+    const [groups,setGroups] = useState([]);
     const [chat,setChat] = useState({messages: []});
     const [currUser,setCurrUser] = useState({username: ""});
     const onLogout = () => {
@@ -31,6 +32,16 @@ const ChatApp: React.FC<MainPageProps> = ({user}) => {
         else onLogout();
     };
 
+    const fetchAllGroups = async () => {
+        const jwtToken = localStorage.getItem('jwtToken') || "";
+        const response = await ProtectedGetRequest(`${apiUrl}/chat/get-groups`,jwtToken);
+        if(response.ok) {
+            const data = await response.json();
+            setGroups(data);
+        }
+        else onLogout();
+    };
+
     const fetchChat = async (user: any) => {
         const jwtToken = localStorage.getItem('jwtToken') || "";
         const response = await ProtectedPostRequest(`${apiUrl}/chat/get-chat`, {type:"private", senderId: userId, receiverId: user._id},jwtToken);
@@ -45,6 +56,7 @@ const ChatApp: React.FC<MainPageProps> = ({user}) => {
     useEffect( () => {
         const fetchData = async () => {
             await fetchAllUsers();
+            await fetchAllGroups();
             if(currUser.username !== ""){
                 await fetchChat(currUser);
             }
@@ -81,7 +93,7 @@ const ChatApp: React.FC<MainPageProps> = ({user}) => {
         <div>
             <h1>Hello {user}</h1>
             <div>
-                <ChatList open={isSidebarOpen} onClose={toggleSidebar} users={users} onChat={fetchChat} />
+                <ChatList open={isSidebarOpen} onClose={toggleSidebar} users={users} groups={groups} onChat={fetchChat} />
                 <ChatWindow chat={chat} currUser={currUser} onSendMessage={sendMessageToServer}/>
                 <Button variant="contained" onClick={toggleSidebar}>Toggle Sidebar</Button>
             </div>

@@ -12,6 +12,7 @@ export interface ChatAppProps{
     open: boolean,
     onClose: () => void,
     users: any,
+    groups: any,
     onChat: any
 }
 
