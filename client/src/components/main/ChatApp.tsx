@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import ChatList from "./ChatList";
 import ChatWindow from "./ChatWindow";
 import { ProtectedGetRequest, ProtectedPostRequest, apiUrl } from "../../services/Server";
+import CreateGroupDialog from "./CreateGroupDialog";
 
 const ChatApp: React.FC<MainPageProps> = ({user}) => { 
     const { logout,userId } = useAuth();
@@ -92,6 +93,7 @@ const ChatApp: React.FC<MainPageProps> = ({user}) => {
     return (
         <div>
             <h1>Hello {user}</h1>
+            <CreateGroupDialog/>
             <div>
                 <ChatList open={isSidebarOpen} onClose={toggleSidebar} users={users} groups={groups} onChat={fetchChat} />
                 <ChatWindow chat={chat} currUser={currUser} onSendMessage={sendMessageToServer}/>
