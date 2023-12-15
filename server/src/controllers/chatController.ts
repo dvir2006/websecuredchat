@@ -48,7 +48,7 @@ const createGroup = async (req: Request, res: Response) => {
     }
 }
 
-const checkExistingGroupUsers = async (senderId: string, users: string) => {
+const checkExistingGroupUsers = async (senderId: string, users: []) => {
     if(! await checkExistingUser(senderId)) return false;
     for(const user of users) {
         if(! await checkExistingUser(user)) return false;
@@ -92,5 +92,39 @@ const getGroups = async (req: Request, res: Response) => {
     }
 }
 
+const checkExistingGroup = async (groupId: string) => {
+    const group = await ChatModel.findById(groupId);
+    return !!group;
+}
+
+const checkExistingUserInGroup = async (groupId: string, userId: string) => {
+    const group = await ChatModel.findById(groupId);
+    const users = group?.users || [];
+    return users.includes(userId);
+}
+
+const checkGroupAdmin = async (groupId: string, userId: string) => {
+    const group = await ChatModel.findById(groupId);
+    return group?.admin_uid === userId;
+}
+
+const addUserToGroup = async (req: Request, res: Response) => {
+    try {
+        const {groupId, addedUserId, userId} = req.body;
+        if(!await checkExistingGroup(groupId)) throw "";
+        if(!await checkExistingUser(addedUserId)) throw "";
+        if(await checkExistingUserInGroup(groupId, addedUserId)) throw "";
+        if(!await checkGroupAdmin(groupId, userId)) throw "";
+        const group = await ChatModel.findById(groupId);
+        if(!group) throw "";
+        else {
+            group?.users.push(addedUserId);
+            group.save();
+        }
+        res.status(200).json({ message: "Successfully added user to group" });
+    } catch (error) {
+        res.status(500).json({ message: 'Internal server error' });
+    }
+}
 
 export default {getChat, sendMessage, createGroup,getGroups};
