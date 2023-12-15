@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import ChatModel from '../models/chat';
 import userModel from "../models/user";
+import { ObjectId } from "mongodb";
 
 const getChat = async (req: Request, res: Response) => {
     try {
@@ -58,7 +59,20 @@ const checkExistingGroupUsers = async (senderId: string, users: []) => {
 
 const sendMessage = async (req: Request, res: Response) => {
     try {
-        const { senderId, receiverId, messageContent } = req.body;
+        const { senderId, receiverId, messageContent,groupId } = req.body;
+        if(!await checkExistingUser(senderId)) throw "";     
+        if(await checkExistingGroup(groupId))
+        {
+            const group = await ChatModel.findById(groupId);
+            if(group)
+            {
+                group.messages.push({ sender: senderId, content: messageContent, timestamp: new Date() });
+                await group.save();
+                res.status(200).json(group);
+                return;
+            }
+        }
+        if(!await checkExistingUser(receiverId)) throw ""; 
         let chat = await ChatModel.findOne({ users: { $all: [senderId, receiverId] } });
         if (!chat) {
             chat = await ChatModel.create({
@@ -97,15 +111,25 @@ const checkExistingGroup = async (groupId: string) => {
     return !!group;
 }
 
-const checkExistingUserInGroup = async (groupId: string, userId: string) => {
+const checkExistingUserInGroup = async (groupId: string, userId: ObjectId) => {
     const group = await ChatModel.findById(groupId);
-    const users = group?.users || [];
-    return users.includes(userId);
+    if(group)
+    {
+        const users =  group.users;
+        return users.includes(userId);
+    }
+    
+    return false;
 }
 
-const checkGroupAdmin = async (groupId: string, userId: string) => {
+const checkGroupAdmin = async (groupId: string, userId: ObjectId) => {
     const group = await ChatModel.findById(groupId);
-    return group?.admin_uid === userId;
+    if(group)
+    {
+        return group.admin_uid === userId;
+    }
+    
+    return false;
 }
 
 const addUserToGroup = async (req: Request, res: Response) => {
@@ -127,4 +151,24 @@ const addUserToGroup = async (req: Request, res: Response) => {
     }
 }
 
-export default {getChat, sendMessage, createGroup,getGroups};
+
+const removeUserFromGroup = async (req: Request, res: Response) => {
+    try {
+        const {groupId, removedUserId, userId} = req.body;
+        if(!await checkExistingGroup(groupId)) throw "";
+        if(!await checkExistingUser(removedUserId)) throw "";
+        if(!await checkExistingUserInGroup(groupId, removedUserId)) throw "";
+        if(!await checkGroupAdmin(groupId, userId)) throw "";
+        const group = await ChatModel.findById(groupId);
+        if(!group) throw "";
+        else {
+            const index = group.users.indexOf(removedUserId);
+            group.users.splice(index, 1);
+            group.save();
+        }
+        res.status(200).json({ message: "Successfully added user to group" });
+    } catch (error) {
+        res.status(500).json({ message: 'Internal server error' });
+    }
+}
+export default {getChat, sendMessage, createGroup,getGroups,addUserToGroup,removeUserFromGroup};
