@@ -34,3 +34,8 @@ export interface AddUserToGroupDialogProps{
     users:any,
     groupId: string
 }
+
+export interface RemoveUserFromGroupProps{
+    users:any,
+    groupId: string
+}

@@ -87,7 +87,7 @@ const ChatApp: React.FC<MainPageProps> = ({user}) => {
 
     const sendMessageToServer = async (user: any, message: string) => {
         if (message.trim() === '') return;
-    
+        
         const requestBody = {
             senderId: userId, 
             receiverId: user._id, 

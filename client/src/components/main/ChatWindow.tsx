@@ -6,6 +6,7 @@ import { useAuth } from "../../context/AuthContext";
 import { username } from "../../utils/signals";
 import { PostRequest, ProtectedPostRequest , apiUrl } from "../../services/Server";
 import AddUserToGroupDialog from './AddUserToGroupDialog';
+import RemoveUserFromGroupDialog from './RemoveUserFromGroupDialog';
 
 const ChatWindow: React.FC<ChatWindowProps> = ({chat, currUser, onSendMessage,isGroup,users}) => { 
     const {userId} = useAuth();
@@ -33,6 +34,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({chat, currUser, onSendMessage,is
         <Box>
             <h1>{isGroup?currUser.name : currUser.username}</h1>
             {isGroup && <AddUserToGroupDialog users={users} groupId={currUser.uid}/>}
+            {isGroup && <RemoveUserFromGroupDialog users={chat.users} groupId={currUser.uid}/>}
             <List>
                 {chat.messages.map((message: MessageType, index: number) => (
                 <ListItem key={index}>
