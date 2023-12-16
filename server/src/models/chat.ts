@@ -17,6 +17,7 @@ const ChatSchema = new mongoose.Schema(
         },
         admin_uid: {
             type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
             required: false,
             minlength: 3,
             maxlength:30  
