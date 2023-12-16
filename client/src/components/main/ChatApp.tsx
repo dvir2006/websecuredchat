@@ -88,11 +88,17 @@ const ChatApp: React.FC<MainPageProps> = ({user}) => {
     const sendMessageToServer = async (user: any, message: string) => {
         if (message.trim() === '') return;
         
-        const requestBody = {
+        let requestBody : any = {
             senderId: userId, 
-            receiverId: user._id, 
             messageContent: message,
         };
+
+        if(isGroup) {
+            requestBody.groupId = user.uid;
+        }
+        else {
+            requestBody.receiverId = user._id;
+        }
         const jwtToken = localStorage.getItem('jwtToken') || "";
         const response = await ProtectedPostRequest(`${apiUrl}/chat/send-message`, requestBody, jwtToken);
     
