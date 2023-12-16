@@ -4,7 +4,7 @@ import { ChatAppProps } from "../../utils/types";
 
 const ChatApp: React.FC<ChatAppProps> = ({open,onClose,users,onChat,groups,onGroup}) => { 
     return (
-        <Drawer variant="permanent" anchor="left" open={open} onClose={onClose}>
+        <Drawer variant="temporary"  open={open} onClose={onClose}>
             <h2>Users</h2>
             <Divider/>
             <List>

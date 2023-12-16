@@ -12,14 +12,16 @@ const getChat = async (req: Request, res: Response) => {
             if(!group) throw "";
             res.status(200).json(group);
         }
-        if (type !== "private") throw "";
-        if(!await checkExistingUser(receiverId) ) throw "";
-        let chat = await ChatModel.findOne({users:{$all: [senderId,receiverId]}});
-        if (!chat) {  
-            const newChat = await ChatModel.create({type: "private", users: [senderId,receiverId], messages: []});
-            chat = newChat;
+        else if (type === "private") {
+            if(!await checkExistingUser(receiverId) ) throw "";
+            let chat = await ChatModel.findOne({users:{$all: [senderId,receiverId]}});
+            if (!chat) {  
+                const newChat = await ChatModel.create({type: "private", users: [senderId,receiverId], messages: []});
+                chat = newChat;
+            }
+            res.status(200).json(chat);
         }
-        res.status(200).json(chat);
+        else throw "";
     } catch (error) 
     {
         res.status(500).json({ message: 'Internal server error' });
@@ -39,7 +41,7 @@ const createGroup = async (req: Request, res: Response) => {
             type: "group",
             name: name,
             admin_uid: userId,
-            users: [userId, ... users],
+            users: users,
             messages: []
         });
         await chat.save();
@@ -102,7 +104,7 @@ const getGroups = async (req: Request, res: Response) => {
           }));
         res.status(200).json({chats: formattedChats});
     } catch (error) {
-        res.status(500).json({ message: 'Internal server error' });
+        res.status(200).json({chats: []});
     }
 }
 
@@ -126,7 +128,7 @@ const checkGroupAdmin = async (groupId: string, userId: ObjectId) => {
     const group = await ChatModel.findById(groupId);
     if(group)
     {
-        return group.admin_uid === userId;
+        return group.admin_uid?._id == userId._id;
     }
     
     return false;

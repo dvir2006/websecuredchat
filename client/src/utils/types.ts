@@ -22,7 +22,8 @@ export interface ChatWindowProps{
     isGroup: boolean
     chat: any,
     currUser: any,
-    onSendMessage: (user: any, message: string) => void
+    onSendMessage: (user: any, message: string) => void,
+    fetchChat: (group: any) => void
 }
 export interface MessageType{
     sender: string,
@@ -32,10 +33,14 @@ export interface MessageType{
 
 export interface AddUserToGroupDialogProps{
     users:any,
-    groupId: string
+    groupId: string,
+    groupUsers: any,
+    fetchChat: (group: any) => void
 }
 
 export interface RemoveUserFromGroupProps{
     users:any,
-    groupId: string
+    groupUsers:any,
+    groupId: string,
+    fetchChat: (group: any) => void
 }

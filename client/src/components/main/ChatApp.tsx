@@ -39,7 +39,7 @@ const ChatApp: React.FC<MainPageProps> = ({user}) => {
         const response = await ProtectedGetRequest(`${apiUrl}/chat/get-groups`,jwtToken);
         if(response.ok) {
             const data = await response.json();
-            setGroups(data);
+            setGroups(data.chats);
         }
         else onLogout();
     };
@@ -101,9 +101,14 @@ const ChatApp: React.FC<MainPageProps> = ({user}) => {
         }
         const jwtToken = localStorage.getItem('jwtToken') || "";
         const response = await ProtectedPostRequest(`${apiUrl}/chat/send-message`, requestBody, jwtToken);
-    
+        console.log(response);
         if (response.ok) {
-            fetchChat(currUser);
+            if(!isGroup) {
+                fetchChat(currUser);
+            }
+            else {
+                fetchGroupChat(currUser);
+            }
         } else {
             alert("Error trying to send message");
             onLogout();
@@ -116,7 +121,7 @@ const ChatApp: React.FC<MainPageProps> = ({user}) => {
             <CreateGroupDialog/>
             <div>
                 <ChatList open={isSidebarOpen} onClose={toggleSidebar} users={users} groups={groups} onChat={fetchChat} onGroup={fetchGroupChat} />
-                <ChatWindow chat={chat} currUser={currUser} onSendMessage={sendMessageToServer} isGroup={isGroup} users={users}/>
+                <ChatWindow chat={chat} currUser={currUser} onSendMessage={sendMessageToServer} isGroup={isGroup} users={users} fetchChat={fetchGroupChat}/>
                 <Button variant="contained" onClick={toggleSidebar}>Toggle Sidebar</Button>
             </div>
             <Button variant="contained" onClick={onLogout}>Logout</Button>

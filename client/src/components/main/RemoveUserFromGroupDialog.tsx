@@ -5,9 +5,17 @@ import { RemoveUserFromGroupProps } from "../../utils/types";
 
 
 
-const RemoveUserFromGroupDialog: React.FC<RemoveUserFromGroupProps>= ({users,groupId}) => { 
+const RemoveUserFromGroupDialog: React.FC<RemoveUserFromGroupProps>= ({users,groupUsers,groupId,fetchChat}) => { 
     const [open, setOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState<string>();
+
+    const idToName = (uid: string) => {
+        for(const user of users)
+        {
+            if(user._id === uid) return user.username;
+        }
+        return "";
+    }
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -25,7 +33,7 @@ const RemoveUserFromGroupDialog: React.FC<RemoveUserFromGroupProps>= ({users,gro
         const jwtToken = localStorage.getItem('jwtToken') || '';
         const response = await ProtectedPostRequest(`${apiUrl}/chat/remove-user-from-group`, { removedUserId: selectedUser, groupId }, jwtToken);
         if (response.ok) {
-        // Handle success
+            fetchChat({uid:groupId});
         }
         setOpen(false);
     };
@@ -44,8 +52,8 @@ const RemoveUserFromGroupDialog: React.FC<RemoveUserFromGroupProps>= ({users,gro
                         value={selectedUser}
                         onChange={handleChange}
                     >
-                        {users.map((user: any) => (
-                            <FormControlLabel value={user._id} control={<Radio />} label={user.username} />
+                        {groupUsers.map((uid: any) => (
+                            <FormControlLabel value={uid} control={<Radio />} label={idToName(uid)} />
                         ))}
                     </RadioGroup>
                 </FormControl>
