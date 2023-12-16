@@ -33,13 +33,13 @@ const checkExistingUser = async (user: string) => {
 
 const createGroup = async (req: Request, res: Response) => {
     try {
-        const { adminId, name, users } = req.body;
-        if(!await checkExistingGroupUsers(adminId, users)) throw "";   
+        const { userId, name, users } = req.body;
+        if(!await checkExistingGroupUsers(userId, users)) throw "";   
         const chat = await ChatModel.create({
             type: "group",
             name: name,
-            admin_uid: adminId,
-            users: [adminId, ... users],
+            admin_uid: userId,
+            users: [userId, ... users],
             messages: []
         });
         await chat.save();
