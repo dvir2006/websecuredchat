@@ -13,10 +13,13 @@ export interface ChatAppProps{
     onClose: () => void,
     users: any,
     groups: any,
-    onChat: any
+    onChat: any,
+    onGroup: (group: any) => void
 }
 
 export interface ChatWindowProps{
+    users:any
+    isGroup: boolean
     chat: any,
     currUser: any,
     onSendMessage: (user: any, message: string) => void
@@ -25,4 +28,9 @@ export interface MessageType{
     sender: string,
     content: string,
     timestamp: Date
+}
+
+export interface AddUserToGroupDialogProps{
+    users:any,
+    groupId: string
 }

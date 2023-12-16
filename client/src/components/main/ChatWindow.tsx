@@ -5,14 +5,23 @@ import { formatDate } from "../../utils/formatDate";
 import { useAuth } from "../../context/AuthContext";
 import { username } from "../../utils/signals";
 import { PostRequest, ProtectedPostRequest , apiUrl } from "../../services/Server";
+import AddUserToGroupDialog from './AddUserToGroupDialog';
 
-const ChatWindow: React.FC<ChatWindowProps> = ({chat, currUser, onSendMessage}) => { 
+const ChatWindow: React.FC<ChatWindowProps> = ({chat, currUser, onSendMessage,isGroup,users}) => { 
     const {userId} = useAuth();
     const [newMessage, setNewMessage] = useState('');
 
     const idToName = (sender: string) => {
-        if(userId === sender) return username.value;
-        return currUser.username;
+        if(!isGroup)
+        {
+            if(userId === sender) return username.value;
+            return currUser.username;
+        }
+        for(const user of users)
+        {
+            if(user._id === sender) return user.username;
+        }
+        return "";
     }
 
     const handleMessageSend = () => {
@@ -22,7 +31,8 @@ const ChatWindow: React.FC<ChatWindowProps> = ({chat, currUser, onSendMessage}) 
 
     return (
         <Box>
-            <h1>{currUser.username}</h1>
+            <h1>{isGroup?currUser.name : currUser.username}</h1>
+            {isGroup && <AddUserToGroupDialog users={users} groupId={currUser.uid}/>}
             <List>
                 {chat.messages.map((message: MessageType, index: number) => (
                 <ListItem key={index}>

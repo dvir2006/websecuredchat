@@ -90,7 +90,7 @@ export default function CreateGroupDialog() {
                   onChange={handleCheckboxChange}
                 />
               }
-              label={user._name}
+              label={user.username}
             />
           ))}
         </DialogContent>
