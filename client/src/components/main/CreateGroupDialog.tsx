@@ -14,6 +14,8 @@ export default function CreateGroupDialog() {
   const [users, setUsers] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
 
+  const auth = useAuth();
+
   const handleClickOpen = () => {
     setOpen(true);
     fetchAllUsers();
@@ -28,7 +30,8 @@ export default function CreateGroupDialog() {
     const response = await ProtectedGetRequest(`${apiUrl}/auth/all-users`, jwtToken);
     if (response.ok) {
       const data = await response.json();
-      setUsers(data);
+      const newData = data.filter((user: any)=>user._id !== auth.userId);
+      setUsers(newData);
     } else {
       setOpen(false);
     }

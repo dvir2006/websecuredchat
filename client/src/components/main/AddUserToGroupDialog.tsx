@@ -11,11 +11,17 @@ const AddUserToGroupDialog: React.FC<AddUserToGroupDialogProps>= ({users,groupUs
     const [filteredUsers, setFilteredUsers] = useState([]);
 
     const filterUsers = (list1:any, list2:any) => {
-        const userSetStrings = new Set(list1); 
-        console.log(userSetStrings);
-        const filteredUsers = list2.filter((user:any) => !userSetStrings.has(user._id.toString()));
-        console.log(filteredUsers);
-        return filteredUsers;
+        try {
+            const userSetStrings = new Set(list1); 
+            console.log(userSetStrings);
+            const filteredUsers = list2.filter((user:any) => !userSetStrings.has(user._id.toString()));
+            console.log(filteredUsers);
+            return filteredUsers;
+        }
+        catch (error) {
+            return [];
+        }
+        
     };
 
     useEffect(() => {
