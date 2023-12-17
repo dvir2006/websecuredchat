@@ -95,9 +95,9 @@ const sendMessage = async (req: Request, res: Response) => {
 
 const getGroups = async (req: Request, res: Response) => {
     try {
-        const { userId} = req.body;
+        const { userId } = req.body;
         if(!await checkExistingUser(userId)) throw "";   
-        const chats = await ChatModel.find({$and: [ { users: { $in: userId } }, { type: 'group' } ]});
+        const chats = await ChatModel.find({$and: [ { $or: [{ users: { $in: userId }}, { admin_uid: userId }]}, { type: 'group' } ]});
         const formattedChats = chats.map(chat => ({
             name: chat.name,
             uid: chat.id

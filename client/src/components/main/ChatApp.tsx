@@ -58,7 +58,7 @@ const ChatApp: React.FC<MainPageProps> = ({user}) => {
 
     const fetchGroupChat = async (group: any) => {
         const jwtToken = localStorage.getItem('jwtToken') || "";
-        const response = await ProtectedPostRequest(`${apiUrl}/chat/get-chat`, {type:"group", senderId: userId, receiverId: group.uid},jwtToken);
+        const response = await ProtectedPostRequest(`${apiUrl}/chat/get-chat`, {type:"group", senderId: userId, receiverId: group.uid}, jwtToken);
         if(response.ok) {
             const data = await response.json();
             setChat(data);
