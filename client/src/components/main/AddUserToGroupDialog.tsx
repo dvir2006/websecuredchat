@@ -7,15 +7,13 @@ import { AddUserToGroupDialogProps } from "../../utils/types";
 
 const AddUserToGroupDialog: React.FC<AddUserToGroupDialogProps>= ({users,groupUsers,groupId,fetchChat}) => { 
     const [open, setOpen] = useState(false);
-    const [selectedUser, setSelectedUser] = useState<string>();
+    const [selectedUser, setSelectedUser] = useState<string>("");
     const [filteredUsers, setFilteredUsers] = useState([]);
 
     const filterUsers = (list1:any, list2:any) => {
         try {
             const userSetStrings = new Set(list1); 
-            console.log(userSetStrings);
             const filteredUsers = list2.filter((user:any) => !userSetStrings.has(user._id.toString()));
-            console.log(filteredUsers);
             return filteredUsers;
         }
         catch (error) {
@@ -65,7 +63,9 @@ const AddUserToGroupDialog: React.FC<AddUserToGroupDialogProps>= ({users,groupUs
                         onChange={handleChange}
                     >
                         {filteredUsers.map((user: any) => (
-                            <FormControlLabel value={user._id} control={<Radio />} label={user.username} />
+                            user._id && user.username && (
+                                <FormControlLabel key={user._id} value={user._id} control={<Radio />} label={user.username} />
+                            )
                         ))}
                     </RadioGroup>
                 </FormControl>
