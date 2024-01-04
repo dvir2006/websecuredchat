@@ -5,7 +5,11 @@ from werkzeug.security import safe_str_cmp
 import re
 
 app = Flask(__name__)
-
+limiter = Limiter(
+    get_remote_address,
+    app=app,
+    default_limits=["1000 per day", "200 per hour"],
+)
 
 # Simulated IP blocklist
 blocked_ips = set()
