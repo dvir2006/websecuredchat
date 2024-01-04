@@ -1,83 +1,48 @@
-from flask import Flask, request, jsonify
+from flask import Flask, make_response, request, jsonify
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
-from werkzeug.security import safe_str_cmp
-import re
+import requests
+from firewall.waf import WebApplicationFirewall
 
 app = Flask(__name__)
 limiter = Limiter(
-    get_remote_address,
-    app=app,
-    default_limits=["1000 per day", "200 per hour"],
+    app,
+    key_func=get_remote_address,
+    default_limits=["1000 per day", "200 per hour"]
 )
 
-# Simulated IP blocklist
-blocked_ips = set()
+waf = WebApplicationFirewall()  # Initialize WAF instance
 
-# Simulated blacklist for malicious payloads
-malicious_payloads = [
-    re.compile(r'drop\s+table', re.IGNORECASE),
-    re.compile(r'script', re.IGNORECASE),
-    re.compile(r'eval\(', re.IGNORECASE),
-    re.compile(r'select\s+\*\s+from', re.IGNORECASE),
-]
-
-# Function to check if IP is blocked
-def is_blocked(ip):
-    return ip in blocked_ips
-
-# Function to check payload for malicious content
-def has_malicious_content(payload):
-    for pattern in malicious_payloads:
-        if pattern.search(payload):
-            return True
-    return False
-
-# Function to check if the request method is allowed for the endpoint
-def is_method_allowed(endpoint, method):
-    allowed_methods = {
-        '/safe_endpoint': ['GET', 'POST'],
-        '/restricted_endpoint': ['POST','GET'],
-    }
-    if endpoint in allowed_methods:
-        return method in allowed_methods[endpoint]
-    return False
-
-# Firewall middleware
+# Middleware to handle requests
 @app.before_request
-def firewall():
-    client_ip = request.remote_addr
-    request_endpoint = request.path
-    request_payload = request.data.decode('utf8')
+@limiter.limit("30 per minute")  # Example rate limit for all endpoints
+def handle_request():
+    # Check the request against WAF rules
+    block_result = waf.handle_request(request)
+    if block_result:
+        waf.log_blocked_request(request)
+        return block_result
 
-    # Check if the IP is blocked
-    if is_blocked(client_ip):
-        return jsonify({'error': 'Access Denied'}), 403
-    
-    # Check payload for malicious content
-    if has_malicious_content(request_payload):
-        block_ip(client_ip)  # Block IP if payload is malicious
-        return jsonify({'error': 'Potential attack detected. IP blocked.'}), 403
+    # Forward the request transparently to the server API endpoint
+    server_api_url = 'http://your_server_api_endpoint' + request.path
+    headers = {key: value for (key, value) in request.headers if key != 'Host'}  # Preserve original headers
 
-    # Check if the request method is allowed for the endpoint
-    if not is_method_allowed(request_endpoint, request.method):
-        return jsonify({'error': 'Method Not Allowed'}), 405
-
-    if 'User-Agent' not in request.headers or not request.headers.get('User-Agent'):
-        return jsonify({'error': 'Invalid User-Agent header'}), 400
-
-    pass
-
-
-def block_ip(ip):
-    blocked_ips.add(ip)
-    return jsonify({'message': f'IP {ip} blocked'})
-
-def unblock_ip(ip):
-    if ip in blocked_ips:
-        blocked_ips.remove(ip)
-        return jsonify({'message': f'IP {ip} unblocked'})
-    return jsonify({'message': f'IP {ip} not found in blocklist'})
+    try:
+        response = requests.request(
+            method=request.method,
+            url=server_api_url,
+            headers=headers,
+            data=request.get_data(),
+            cookies=request.cookies,
+            allow_redirects=False
+        )
+        flask_response = make_response(response.text)
+        flask_response.status_code = response.status_code
+        for key, value in response.headers.items():
+            flask_response.headers[key] = value
+        return flask_response
+    except requests.RequestException as e:
+        return str(e), 500  # Return an error if there's an issue forwarding the request
 
 if __name__ == '__main__':
     app.run(port=5000)
