@@ -3,6 +3,7 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 import requests
 from firewall.waf import WebApplicationFirewall
+from firewall.adminUi import AdminUi
 
 app = Flask(__name__)
 limiter = Limiter(
@@ -11,7 +12,8 @@ limiter = Limiter(
     default_limits=["1000 per day", "200 per hour"]
 )
 
-waf = WebApplicationFirewall()  # Initialize WAF instance
+waf = WebApplicationFirewall(limiter)  # Initialize WAF instance
+admin_interface = AdminUi(waf)
 
 # Middleware to handle requests
 @app.before_request
@@ -46,3 +48,4 @@ def handle_request():
 
 if __name__ == '__main__':
     app.run(port=5000)
+    admin_interface.start()

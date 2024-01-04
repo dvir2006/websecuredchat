@@ -2,10 +2,13 @@ from flask import jsonify
 
 
 class WebApplicationFirewall:
-    def __init__(self):
+    def __init__(self, limiter):
         self.blocked_ips = set()
         self.log_file = 'waf_logs.txt'
         self.malicious_payloads = []
+        self.daily_rate_limit = "1000 per day"
+        self.hourly_rate_limit = "200 per hour"
+        self.limiter = limiter
 
     def handle_request(self, request):
         client_ip = request.remote_addr
@@ -44,3 +47,12 @@ class WebApplicationFirewall:
     def remove_blocked_ip(self, ip):
         if ip in self.blocked_ips:
             self.blocked_ips.remove(ip)
+
+    def change_rate_limits(self, new_daily_limit, new_hourly_limit):
+        self.daily_rate_limit = new_daily_limit
+        self.hourly_rate_limit = new_hourly_limit
+
+        self.update_limiter_rate_limits()
+
+    def update_limiter_rate_limits(self):
+        self.limiter.limits = [self.daily_rate_limit, self.hourly_rate_limit]
