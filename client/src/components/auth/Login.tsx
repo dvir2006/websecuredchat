@@ -3,9 +3,10 @@ import { LoginProps } from "../../utils/types";
 import { auth, email, error, password, username } from "../../utils/signals";
 import { useNavigate } from "react-router-dom";
 import { PostRequest, apiUrl } from "../../services/Server";
-import { useEffect, useState } from "react";
+import { createRef, useEffect, useRef, useState } from "react";
 import { effect } from "@preact/signals";
 import { useAuth } from "../../context/AuthContext";
+import ReCAPTCHA from "react-google-recaptcha";
 
 const Login: React.FC<LoginProps> = () => {
     const navigate = useNavigate();
@@ -13,14 +14,17 @@ const Login: React.FC<LoginProps> = () => {
     const [canDisplayError,setCanDisplayError] = useState(false);
     
     const {login} = useAuth();
+    const recaptchaRef = createRef<ReCAPTCHA>();
 
     useEffect(() => {
         setCanDisplayError(false);
     }, []);
-    
+
 
     const onSubmit = async (event:React.FormEvent<HTMLFormElement>) =>{
         event.preventDefault();
+        
+        
         setCanDisplayError(false);
         const response = await PostRequest(`${apiUrl}/auth/login`, {email: email.value, password:password.value});
         if(response.ok) {
@@ -37,9 +41,37 @@ const Login: React.FC<LoginProps> = () => {
             setCanDisplayError(true);
         }
     }
+    async function onCaptcha(event: React.FormEvent<HTMLFormElement>): Promise<void> {
+        event.preventDefault();
+
+        const captchaValue = recaptchaRef.current?.getValue();
+
+        if (!captchaValue) {
+
+            alert("Please verify the reCAPTCHA!");
+
+        } else {
+            setCanDisplayError(false);
+            const response = await PostRequest(`${apiUrl}/auth/login`, {email: email.value, password:password.value});
+            if(response.ok) {
+                password.value = "";
+                const data = await response.json();
+                const token = data.token;
+                username.value = data.username;
+                localStorage.setItem('jwtToken', token);
+                login(data.userId);
+                navigate('/'); 
+            }
+            else{
+                error.value =  (await response.json()).message;
+                setCanDisplayError(true);
+            }
+        }
+    }
+
     return (
         <div>
-            <Box component="form" onSubmit={onSubmit}>
+            <Box component="form" onSubmit={onCaptcha}>
                 <TextField
                     required
                     value={email}
@@ -59,6 +91,7 @@ const Login: React.FC<LoginProps> = () => {
                 {canDisplayError &&<Alert severity="error">{error.value}</Alert>}
                 <Link href="/register">Don't have an account, Click to Register</Link>
                 <Button variant="contained" type="submit">Submit</Button>
+                <ReCAPTCHA ref={recaptchaRef} sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI" />
             </Box>
         </div>
     );
