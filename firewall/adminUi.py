@@ -49,14 +49,14 @@ class AdminUi:
 
     def watch_sniff(self):
         print("Press Esc to stop")
-        self.app.logger.setLevel(self.logger_level)
+        logging.disable(False)
         keyboard.wait("Esc")
-        self.app.logger.setLevel(logging.CRITICAL)
+        logging.disable()
 
     def start(self):
         while True:
             self.display_menu()
-            choice = input("Enter your choice (1-6): ")
+            choice = input("Enter your choice (1-7): ")
 
             if choice == '1':
                 self.block_ip()

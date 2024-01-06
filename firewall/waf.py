@@ -1,6 +1,5 @@
 from flask import jsonify
 
-
 class WebApplicationFirewall:
     def __init__(self, limiter):
         self.blocked_ips = set()

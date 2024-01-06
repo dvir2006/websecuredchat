@@ -13,9 +13,9 @@ limiter = Limiter(
     app=app,
     default_limits=["1000 per day", "200 per hour"]
 )
-
+logging.disable()
 original_logger_level = app.logger.level 
-app.logger.setLevel(logging.CRITICAL)
+
 
 waf = WebApplicationFirewall(limiter)
 admin_interface = AdminUi(waf, app, original_logger_level)
@@ -30,7 +30,7 @@ def handle_request():
         return block_result
 
     server_api_url = 'http://localhost:5000' + request.path
-    headers = {key: value for (key, value) in request.headers if key != 'Host'}  # Preserve original headers
+    headers = {key: value for (key, value) in request.headers if key != 'Host'}  
 
     try:
         response = requests.request(
