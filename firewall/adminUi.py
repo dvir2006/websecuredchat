@@ -1,8 +1,12 @@
-from firewall.waf import WebApplicationFirewall
+from waf import WebApplicationFirewall
+import keyboard
+import logging
 
 class AdminUi:
-    def __init__(self, waf_instance):
+    def __init__(self, waf_instance, app, logger_level):
         self.waf = waf_instance
+        self.app = app
+        self.app_logger_level = logger_level
 
     def display_menu(self):
         print("Admin Menu:")
@@ -11,7 +15,8 @@ class AdminUi:
         print("3. View Logger")
         print("4. Change Rate Limits")
         print("5. Add Malicious Payload to DB")
-        print("6. Exit")
+        print("6. watch packets")
+        print("7. Exit")
 
     def block_ip(self):
         ip = input("Enter IP to block: ")
@@ -42,6 +47,12 @@ class AdminUi:
         self.waf.add_malicious_payload(payload)
         print("Malicious payload added to the database.")
 
+    def watch_sniff(self):
+        print("Press Esc to stop")
+        self.app.logger.setLevel(self.logger_level)
+        keyboard.wait("Esc")
+        self.app.logger.setLevel(logging.CRITICAL)
+
     def start(self):
         while True:
             self.display_menu()
@@ -56,8 +67,10 @@ class AdminUi:
             elif choice == '4':
                 self.change_rate_limits()
             elif choice == '5':
-                self.add_malicious_payload()
+                self.add_malicious_payload()  
             elif choice == '6':
+                self.watch_sniff()
+            elif choice == '7':
                 print("Exiting Admin UI.")
                 break
             else:
