@@ -20,6 +20,14 @@ const UserSchema = new mongoose.Schema(
             required: true,
             minlength: 3,
             maxlength:1024
+        },
+        otpSecret: {
+            type: String, 
+            default: '' 
+        },
+        otpTimestamp: {
+            type: Number, 
+            default: 0 
         }
     },
     {
