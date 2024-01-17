@@ -11,4 +11,6 @@ authRouter.get('/check-user',authCheckMiddleware , authController.checkUserAuth)
 
 authRouter.get('/all-users', authController.getAllUsers);
 
+authRouter.post('/verify-otp', authController.verifyOTP);
+
 export default authRouter;

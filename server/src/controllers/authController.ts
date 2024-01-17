@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import UserModel from '../models/user';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import speakeasy from 'speakeasy';
+import nodemailer from 'nodemailer';
 
 export const registerUser = async (req: Request, res: Response) => {
     const { username, email, password } = req.body;
@@ -54,6 +56,11 @@ export const loginUser = async (req: Request, res: Response) =>
         }
         const token = jwt.sign({ _id: user._id }, jwtKey, {expiresIn: '3d'});
         
+        if (user.otpSecret) {
+            await generateAndSendOTP(user);
+            return res.json({ message: 'Please enter the OTP sent to your email', userId: user._id, username: user.username, require2FA: true });
+        }
+
         res.header('auth-token', token).json({ token, message: 'Login successful', userId: user._id, username: user.username });
         } catch (error) {
         res.status(500).json({ message: 'Internal server error' });
@@ -81,4 +88,63 @@ export const checkUserAuth = async (req: Request, res: Response) => {
     }
 };
 
-export default {registerUser, loginUser, getAllUsers,checkUserAuth};
+export const verifyOTP = async (req: Request, res: Response) => {
+    const { userId, otp } = req.body;
+
+    try {
+        const user = await UserModel.findById(userId);
+
+        if (!user) {
+            return res.status(400).json({ message: 'User not found' });
+        }
+
+        const isValidOTP = speakeasy.totp.verify({
+            secret: user.otpSecret,
+            encoding: 'base32',
+            token: otp,
+            window: 1
+        });
+
+        if (isValidOTP && Date.now() - user.otpTimestamp <= 120000) {
+            const jwtKey = process.env.JWT_SECRET || '';
+            const token = jwt.sign({ _id: user._id }, jwtKey, {expiresIn: '3d'});
+            res.header('auth-token', token).json({ token, message: 'Login successful', userId: user._id, username: user.username });
+        } else {
+            return res.status(400).json({ message: 'Invalid OTP or expired, please try again' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+export const generateAndSendOTP = async (user: any) => {
+    const otpSecret = speakeasy.generateSecret().base32;
+    const otp = speakeasy.totp({
+        secret: otpSecret,
+        encoding: 'base32',
+    });
+
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: 'aharonibar6@gmail.com',
+            pass: 'TestEmail112233',
+        },
+    });
+
+    const mailOptions = {
+        from: 'aharonibar6@gmail.com',
+        to: user.email,
+        subject: 'Your OTP for Two-Factor Authentication',
+        text: `Your OTP is: ${otp}`,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    user.otpSecret = otpSecret;
+    user.otpTimestamp = Date.now();
+    await user.save();
+};
+
+
+export default {registerUser, loginUser, getAllUsers,checkUserAuth, verifyOTP};
