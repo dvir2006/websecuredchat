@@ -1,5 +1,5 @@
 import { Alert, Box, Button, Link, TextField } from "@mui/material";
-import { LoginProps } from "../../utils/types";
+import { LoginProps, TwoFactorAuthFormProps } from "../../utils/types";
 import { auth, email, error, password, username } from "../../utils/signals";
 import { useNavigate } from "react-router-dom";
 import { PostRequest, apiUrl } from "../../services/Server";
@@ -20,6 +20,9 @@ const Login: React.FC<LoginProps> = () => {
     const {login} = useAuth();
     const recaptchaRef = createRef<ReCAPTCHA>();
 
+    const resetRequire2FA = () => {
+        setRequire2FA(false);
+    };
 
     useEffect(() => {
         setCanDisplayError(false);
@@ -36,8 +39,8 @@ const Login: React.FC<LoginProps> = () => {
             password.value = "";
             const data = await response.json();
             username.value = data.username;
-            if (require2FA) {
-                setRequire2FA(false);
+            if (data.require2FA) {
+                setRequire2FA(true);
                 setUserId(data.userId);
             } 
             else{
@@ -103,7 +106,7 @@ const Login: React.FC<LoginProps> = () => {
                 <Link href="/register">Don't have an account, Click to Register</Link>
                 <Button variant="contained" type="submit">Submit</Button>
                 <ReCAPTCHA ref={recaptchaRef} sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI" />
-                {require2FA && <TwoFactorAuthForm userId={ userId } />}
+                {require2FA && <TwoFactorAuthForm userId={ userId } onVerificationFail={resetRequire2FA} />}
             </Box>
         </div>
     );

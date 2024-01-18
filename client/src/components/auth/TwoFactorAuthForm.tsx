@@ -5,7 +5,7 @@ import { PostRequest, apiUrl } from '../../services/Server';
 import { error, otp } from '../../utils/signals';
 import { TwoFactorAuthFormProps } from '../../utils/types'
 
-export const TwoFactorAuthForm: React.FC<TwoFactorAuthFormProps> = ({ userId }) => {
+export const TwoFactorAuthForm: React.FC<TwoFactorAuthFormProps> = ({ userId, onVerificationFail }) => {
   const navigate = useNavigate();
   const [canDisplayError, setCanDisplayError] = useState(false);
 
@@ -25,6 +25,7 @@ export const TwoFactorAuthForm: React.FC<TwoFactorAuthFormProps> = ({ userId }) 
       } else {
         error.value = (await response.json()).message;
         setCanDisplayError(true);
+        onVerificationFail();
       }
     } catch (error) {
       console.error('Error verifying OTP:', error);

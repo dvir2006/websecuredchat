@@ -47,4 +47,5 @@ export interface RemoveUserFromGroupProps{
 
 export interface TwoFactorAuthFormProps {
     userId: string;
-}
+    onVerificationFail: () => void;
+  }
