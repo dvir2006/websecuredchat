@@ -7,14 +7,19 @@ import { createRef, useEffect, useRef, useState } from "react";
 import { effect } from "@preact/signals";
 import { useAuth } from "../../context/AuthContext";
 import ReCAPTCHA from "react-google-recaptcha";
+import { TwoFactorAuthForm } from './TwoFactorAuthForm';
+
 
 const Login: React.FC<LoginProps> = () => {
     const navigate = useNavigate();
 
     const [canDisplayError,setCanDisplayError] = useState(false);
+    const [require2FA, setRequire2FA] = useState(false);
+    const [userId, setUserId] = useState("");
     
     const {login} = useAuth();
     const recaptchaRef = createRef<ReCAPTCHA>();
+
 
     useEffect(() => {
         setCanDisplayError(false);
@@ -30,11 +35,17 @@ const Login: React.FC<LoginProps> = () => {
         if(response.ok) {
             password.value = "";
             const data = await response.json();
-            const token = data.token;
             username.value = data.username;
-            localStorage.setItem('jwtToken', token);
-            login(data.userId);
-            navigate('/'); 
+            if (require2FA) {
+                setRequire2FA(false);
+                setUserId(data.userId);
+            } 
+            else{
+                const token = data.token;
+                localStorage.setItem('jwtToken', token);
+                login(data.userId);
+                navigate('/'); 
+            }
         }
         else{
             error.value =  (await response.json()).message;
@@ -92,6 +103,7 @@ const Login: React.FC<LoginProps> = () => {
                 <Link href="/register">Don't have an account, Click to Register</Link>
                 <Button variant="contained" type="submit">Submit</Button>
                 <ReCAPTCHA ref={recaptchaRef} sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI" />
+                {require2FA && <TwoFactorAuthForm userId={ userId } />}
             </Box>
         </div>
     );

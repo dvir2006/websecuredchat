@@ -44,3 +44,7 @@ export interface RemoveUserFromGroupProps{
     groupId: string,
     fetchChat: (group: any) => void
 }
+
+export interface TwoFactorAuthFormProps {
+    userId: string;
+}
