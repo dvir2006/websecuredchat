@@ -29,32 +29,6 @@ const Login: React.FC<LoginProps> = () => {
     }, []);
 
 
-    const onSubmit = async (event:React.FormEvent<HTMLFormElement>) =>{
-        event.preventDefault();
-        
-        
-        setCanDisplayError(false);
-        const response = await PostRequest(`${apiUrl}/auth/login`, {email: email.value, password:password.value});
-        if(response.ok) {
-            password.value = "";
-            const data = await response.json();
-            username.value = data.username;
-            if (data.require2FA) {
-                setRequire2FA(true);
-                setUserId(data.userId);
-            } 
-            else{
-                const token = data.token;
-                localStorage.setItem('jwtToken', token);
-                login(data.userId);
-                navigate('/'); 
-            }
-        }
-        else{
-            error.value =  (await response.json()).message;
-            setCanDisplayError(true);
-        }
-    }
     async function onCaptcha(event: React.FormEvent<HTMLFormElement>): Promise<void> {
         event.preventDefault();
 
@@ -70,11 +44,17 @@ const Login: React.FC<LoginProps> = () => {
             if(response.ok) {
                 password.value = "";
                 const data = await response.json();
-                const token = data.token;
                 username.value = data.username;
-                localStorage.setItem('jwtToken', token);
-                login(data.userId);
-                navigate('/'); 
+                if (data.require2FA) {
+                    setRequire2FA(true);
+                    setUserId(data.userId);
+                } 
+                else {
+                    const token = data.token;
+                    localStorage.setItem('jwtToken', token);
+                    login(data.userId);
+                    navigate('/'); 
+                }
             }
             else{
                 error.value =  (await response.json()).message;
