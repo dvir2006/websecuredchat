@@ -30,6 +30,7 @@ export const registerUser = async (req: Request, res: Response) => {
             username,
             email,
             password: hashedPassword,
+            otpSecret: "123234"
         });
         await newUser.save();
         res.status(201).json({ message: 'Registration successful' });
@@ -55,7 +56,6 @@ export const loginUser = async (req: Request, res: Response) =>
             return res.status(400).json({ message: 'Invalid email or password' });
         }
         const token = jwt.sign({ _id: user._id }, jwtKey, {expiresIn: '3d'});
-        
         if (user.otpSecret) {
             await generateAndSendOTP(user);
             return res.json({ message: 'Please enter the OTP sent to your email', userId: user._id, username: user.username, require2FA: true });
@@ -123,7 +123,6 @@ export const generateAndSendOTP = async (user: any) => {
         secret: otpSecret,
         encoding: 'base32',
     });
-
     const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
@@ -131,16 +130,14 @@ export const generateAndSendOTP = async (user: any) => {
             pass: 'TestEmail112233',
         },
     });
-
     const mailOptions = {
         from: 'aharonibar6@gmail.com',
         to: user.email,
         subject: 'Your OTP for Two-Factor Authentication',
         text: `Your OTP is: ${otp}`,
     };
-
-    await transporter.sendMail(mailOptions);
-
+    let data = await transporter.sendMail(mailOptions);
+    console.log(data.accepted, data.response)
     user.otpSecret = otpSecret;
     user.otpTimestamp = Date.now();
     await user.save();

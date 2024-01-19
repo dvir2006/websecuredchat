@@ -23,7 +23,7 @@ const UserSchema = new mongoose.Schema(
         },
         otpSecret: {
             type: String, 
-            default: '' 
+            default: '123234' 
         },
         otpTimestamp: {
             type: Number, 
