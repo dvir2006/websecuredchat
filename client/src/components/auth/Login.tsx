@@ -50,6 +50,7 @@ const Login: React.FC<LoginProps> = () => {
                     setUserId(data.userId);
                 } 
                 else {
+                    console.log(data);
                     const token = data.token;
                     localStorage.setItem('jwtToken', token);
                     login(data.userId);

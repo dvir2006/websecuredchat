@@ -4,10 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import { PostRequest, apiUrl } from '../../services/Server';
 import { error, otp } from '../../utils/signals';
 import { TwoFactorAuthFormProps } from '../../utils/types'
+import { useAuth } from '../../context/AuthContext';
 
 export const TwoFactorAuthForm: React.FC<TwoFactorAuthFormProps> = ({ userId, onVerificationFail }) => {
   const navigate = useNavigate();
   const [canDisplayError, setCanDisplayError] = useState(false);
+  const {login} = useAuth();
 
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -21,6 +23,9 @@ export const TwoFactorAuthForm: React.FC<TwoFactorAuthFormProps> = ({ userId, on
 
       if (response.ok) {
         otp.value = '';
+        const data =await response.json();
+        localStorage.setItem('jwtToken', data.token);
+        login(data.userId);
         navigate('/');
       } else {
         error.value = (await response.json()).message;
