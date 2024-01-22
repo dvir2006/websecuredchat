@@ -124,7 +124,9 @@ export const generateAndSendOTP = async (user: any) => {
         encoding: 'base32',
     });
     const transporter = nodemailer.createTransport({
-        service: 'gmail',
+        host: 'smtp.gmail.com',
+        port: 465, 
+        secure: true, 
         auth: {
             user: 'aharonibar6@gmail.com',
             pass: 'TestEmail112233',
