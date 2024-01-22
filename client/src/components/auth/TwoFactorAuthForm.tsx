@@ -34,6 +34,7 @@ export const TwoFactorAuthForm: React.FC<TwoFactorAuthFormProps> = ({ userId, on
       }
     } catch (error) {
       console.error('Error verifying OTP:', error);
+      otp.value = '';
       setCanDisplayError(true);
     }
   };

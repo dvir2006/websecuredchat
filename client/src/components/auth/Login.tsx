@@ -87,8 +87,8 @@ const Login: React.FC<LoginProps> = () => {
                 <Link href="/register">Don't have an account, Click to Register</Link>
                 <Button variant="contained" type="submit">Submit</Button>
                 <ReCAPTCHA ref={recaptchaRef} sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI" />
-                {require2FA && <TwoFactorAuthForm userId={ userId } onVerificationFail={resetRequire2FA} />}
             </Box>
+                {require2FA && <TwoFactorAuthForm userId={ userId } onVerificationFail={resetRequire2FA} />}
         </div>
     );
 }

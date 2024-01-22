@@ -4,6 +4,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import speakeasy from 'speakeasy';
 import nodemailer from 'nodemailer';
+import sgMail from '@sendgrid/mail';
 
 export const registerUser = async (req: Request, res: Response) => {
     const { username, email, password } = req.body;
@@ -118,31 +119,42 @@ export const verifyOTP = async (req: Request, res: Response) => {
 };
 
 export const generateAndSendOTP = async (user: any) => {
-    const otpSecret = speakeasy.generateSecret().base32;
-    const otp = speakeasy.totp({
-        secret: otpSecret,
-        encoding: 'base32',
-    });
-    const transporter = nodemailer.createTransport({
-        host: 'smtp.gmail.com',
-        port: 465, 
-        secure: true, 
-        auth: {
-            user: 'aharonibar6@gmail.com',
-            pass: 'TestEmail112233',
-        },
-    });
-    const mailOptions = {
-        from: 'aharonibar6@gmail.com',
-        to: user.email,
-        subject: 'Your OTP for Two-Factor Authentication',
-        text: `Your OTP is: ${otp}`,
-    };
-    let data = await transporter.sendMail(mailOptions);
-    console.log(data.accepted, data.response)
-    user.otpSecret = otpSecret;
-    user.otpTimestamp = Date.now();
-    await user.save();
+    const otpSecret = speakeasy.generateSecret({ length: 20 }).base32;
+        const otp = speakeasy.totp({
+            secret: otpSecret,
+            encoding: 'base32',
+        });
+
+        const testAccount = await nodemailer.createTestAccount();
+
+        const transporter = nodemailer.createTransport({
+            host: testAccount.smtp.host,
+            port: testAccount.smtp.port,
+            secure: testAccount.smtp.secure,
+            auth: {
+                user: testAccount.user,
+                pass: testAccount.pass,
+            },
+        });
+
+        const html = `
+            <h1> OTP </h1>
+            <p> Your one-time password is: ${otp}</p>
+        `;
+
+        const mailOptions = {
+            from: 'aharonibar6@gmail.com',
+            to: user.email,
+            subject: 'Your OTP for Two-Factor Authentication',
+            html: html,
+        };
+
+        let data = await transporter.sendMail(mailOptions);
+        console.log(data.accepted, data.response);
+        console.log('Preview URL: ' + nodemailer.getTestMessageUrl(data));
+        user.otpSecret = otpSecret;
+        user.otpTimestamp = Date.now();
+        await user.save();
 };
 
 
