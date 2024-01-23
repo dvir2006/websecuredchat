@@ -1,4 +1,4 @@
-export const apiUrl = "http://localhost:4545/api"
+export const apiUrl = "https://localhost:4545/api"
 
 export const PostRequest = async (url: string, body:any) :Promise<Response> => {
     const res = await fetch(url, {

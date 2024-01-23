@@ -50,7 +50,7 @@ def handle_request():
         return str(e), 500  
 
 def run_app():
-    app.run(port=4545)
+    app.run(port=4545,ssl_context=('../CA/cert.pem', '../CA/key.pem'), debug=True)
 
 def run_admin_interface():
     admin_interface.start()
@@ -59,8 +59,8 @@ if __name__ == '__main__':
     app_thread = threading.Thread(target=run_app)
     admin_interface_thread = threading.Thread(target=run_admin_interface)
 
-    app_thread.start()
+    #app_thread.start()
     admin_interface_thread.start()
-
-    app_thread.join()
+    app.run(port=4545,ssl_context=('../CA/cert.pem', '../CA/key.pem'), debug=True)
+    #app_thread.join()
     admin_interface_thread.join()
