@@ -11,6 +11,8 @@ chatRouter.post('/create-group',authCheckMiddleware, chatController.createGroup)
 
 chatRouter.get('/get-groups',authCheckMiddleware, chatController.getGroups);
 
+chatRouter.post('/get-new-messages',authCheckMiddleware, chatController.getNewMessages);
+
 chatRouter.post('/add-user-to-group',authCheckMiddleware, chatController.addUserToGroup);
 
 chatRouter.post('/remove-user-from-group',authCheckMiddleware, chatController.removeUserFromGroup);

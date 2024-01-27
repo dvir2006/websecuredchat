@@ -16,15 +16,25 @@ const ChatSchema = new mongoose.Schema(
             maxlength:30  
         },
         admin_uid: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'User',
-            required: false,
-            minlength: 3,
-            maxlength:30  
+            id:{type: mongoose.Schema.Types.ObjectId,ref: 'User',minlength: 3,maxlength:30 ,},
+            default: {},
+            newMessages:[
+                {
+                  sender: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+                  content: String,
+                  timestamp: { type: Date, default: new Date()}
+                }
+            ], 
         },
         users: [{
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'User'
+            id:{type: mongoose.Schema.Types.ObjectId,ref: 'User',minlength: 3,maxlength:30 , required: true},
+            newMessages:[
+                {
+                  sender: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+                  content: String,
+                  timestamp: { type: Date, default: new Date()}
+                }
+            ],
         }],
         messages: [
             {

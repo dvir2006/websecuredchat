@@ -16,8 +16,101 @@ const ChatApp: React.FC<MainPageProps> = ({user}) => {
     const [users,setUsers] = useState([]);
     const [groups,setGroups] = useState([]);
     const [chat,setChat] = useState({messages: []});
-    const [currUser,setCurrUser] = useState({username: ""});
+    const [currUser,setCurrUser] = useState<any>({username: ""});
     const [isGroup,setIsGroup] = useState(false);
+    //initialize indexedDB with useAuth to get user id
+    const initDB = (chatId: string) => {
+        return new Promise<IDBDatabase | null>((resolve) => {
+            let dbVersion = 1;
+            const dbName = `ChatDB_${userId}`;
+    
+            const request = indexedDB.open(dbName, dbVersion);
+            let db: IDBDatabase;
+            request.onupgradeneeded = () => {
+                db = request.result;
+          
+                // if the data object store doesn't exist, create it
+                if (!db.objectStoreNames.contains(chatId)) {
+                  console.log(`Creating ${chatId} store`);
+                  db.createObjectStore(chatId, { keyPath: 'id' });
+                }
+                // no need to resolve here
+              };
+          
+              request.onsuccess = () => {
+                db = request.result;
+                dbVersion = db.version;
+                console.log('request.onsuccess - initDB', dbVersion);
+                resolve(db);
+              };
+          
+              request.onerror = () => {
+                resolve(null);
+              };
+        });
+    };
+    const saveMessageToDB = async (messages: any, uid: string) => {
+        let db = await initDB(uid);
+        return new Promise((resolve) => {
+            const request = indexedDB.open(`ChatDB_${userId}`, 1);
+        
+            request.onsuccess = () => {
+                console.log('request.onsuccess - addData', messages);
+                db = request.result;
+                const tx = db.transaction(uid, 'readwrite');
+                const store = tx.objectStore(uid);
+                for (const message of messages)
+                {
+                    store.add(message);
+                }
+                resolve(true);
+            };
+        
+            request.onerror = () => {
+                const error = request.error?.message
+                if (error) {
+                resolve(error);
+                } else {
+                resolve('Unknown error');
+                }
+            };
+        });
+    };
+
+    
+    const fetchMessagesFromDB = async () => {
+        try {
+            let uid = isGroup ? currUser.uid : currUser._id;
+            const db = await initDB(uid);
+            if (db) {
+                return new Promise((resolve, reject) => {
+                    const transaction = db.transaction([uid], "readonly");
+                    const store = transaction.objectStore(uid);
+        
+                    const request = store.getAll();
+        
+                    request.onsuccess = () => {
+                        resolve(request.result);
+                    };
+        
+                    request.onerror = (event) => {
+                        console.error("Error fetching messages:", (event.target as IDBOpenDBRequest).error);
+                        reject(((event.target as IDBOpenDBRequest).error));
+                    };
+        
+                    transaction.oncomplete = () => {
+                        db.close();
+                    };
+                });
+            }
+        } catch (error) {
+            console.error("Error opening IndexedDB:", error);
+            // Handle the error or throw it again if needed
+            throw error;
+        }
+    };
+    
+
     const onLogout = () => {
         localStorage.removeItem('jwtToken');
         logout();
@@ -45,34 +138,49 @@ const ChatApp: React.FC<MainPageProps> = ({user}) => {
     };
 
     const fetchChat = async (user: any) => {
+        //const jwtToken = localStorage.getItem('jwtToken') || "";
+        //const data = await response.json();
+        //setChat(data);
+        setCurrUser(user);
+        setIsGroup(false);
+        const messages: any = await fetchMessagesFromDB();
+        console.log(messages);
+        if(messages) setChat({ messages });
+        
+        
+    };
+
+    const fetchNewMessages = async (user: any) => {
         const jwtToken = localStorage.getItem('jwtToken') || "";
-        const response = await ProtectedPostRequest(`${apiUrl}/chat/get-chat`, {type:"private", senderId: userId, receiverId: user._id},jwtToken);
+        let uid = "", type = "private";
+        if(isGroup) {
+            type = "group";
+            uid = currUser.uid;
+        }
+        else {
+            uid = currUser._id;
+        }
+        const response = await ProtectedPostRequest(`${apiUrl}/chat/get-new-messages`, {type, receiverId: uid},jwtToken);
         if(response.ok) {
             const data = await response.json();
-            setChat(data);
-            setCurrUser(user);
-            setIsGroup(false);
+            await saveMessageToDB(data.messages,uid);
         }
         else onLogout();
     };
 
     const fetchGroupChat = async (group: any) => {
-        const jwtToken = localStorage.getItem('jwtToken') || "";
-        const response = await ProtectedPostRequest(`${apiUrl}/chat/get-chat`, {type:"group", senderId: userId, receiverId: group.uid}, jwtToken);
-        if(response.ok) {
-            const data = await response.json();
-            setChat(data);
-            setCurrUser(group);
-            setIsGroup(true);
-        }
-        else onLogout();
+        setCurrUser(group);
+        setIsGroup(true);
+        const messages: any = await fetchMessagesFromDB();
+        if(messages) setChat({ messages });
     };
     
     useEffect( () => {
         const fetchData = async () => {
             await fetchAllUsers();
             await fetchAllGroups();
-            if(currUser.username !== ""){
+            if(currUser.username !== "" ){
+                await fetchNewMessages(currUser);
                 await fetchChat(currUser);
             }
         };
@@ -103,6 +211,7 @@ const ChatApp: React.FC<MainPageProps> = ({user}) => {
         const response = await ProtectedPostRequest(`${apiUrl}/chat/send-message`, requestBody, jwtToken);
         console.log(response);
         if (response.ok) {
+            await fetchNewMessages(currUser);
             if(!isGroup) {
                 fetchChat(currUser);
             }
@@ -130,3 +239,4 @@ const ChatApp: React.FC<MainPageProps> = ({user}) => {
 }
 
 export default ChatApp;
+

@@ -11,7 +11,7 @@ import RemoveUserFromGroupDialog from './RemoveUserFromGroupDialog';
 const ChatWindow: React.FC<ChatWindowProps> = ({chat, currUser, onSendMessage,isGroup,users,fetchChat}) => { 
     const {userId} = useAuth();
     const [newMessage, setNewMessage] = useState('');
-
+    
     const idToName = (sender: string) => {
         if(!isGroup)
         {
@@ -36,7 +36,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({chat, currUser, onSendMessage,is
             {isGroup && <AddUserToGroupDialog users={users} groupId={currUser.uid} fetchChat={fetchChat} groupUsers={chat.users}/>}
             {isGroup && <RemoveUserFromGroupDialog users={users} groupUsers={chat.users} groupId={currUser.uid} fetchChat={fetchChat}/>}
             <List>
-                {chat.messages.map((message: MessageType, index: number) => (
+                { chat.messages.map((message: MessageType, index: number) => (
                 <ListItem key={index}>
                     <ListItemText
                     primary={message.content}
