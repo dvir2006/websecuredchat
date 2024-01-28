@@ -16,7 +16,7 @@ const Footer: React.FC = () => {
           zIndex: 1000,
         }}
       >
-        <Typography variant="h6">TODO: Add Footer</Typography>
+        <Typography variant="h6">Sigma</Typography>
       </Box>
     </footer>
   );

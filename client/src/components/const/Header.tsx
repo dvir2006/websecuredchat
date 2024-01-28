@@ -16,7 +16,7 @@ const Header: React.FC = () => {
           zIndex: 1000,
         }}
       >
-        <Typography variant="h4">TODO: Add Name</Typography>
+        <Typography variant="h4">Seqchat</Typography>
       </Box>
     </header>
   );
