@@ -9,12 +9,6 @@ const LoginPageContainer = styled("div")({
   display: "flex",
   flexDirection: "column",
   minHeight: "100vh",
-  position:"fixed",
-  top: 0,
-  left: 0,
-  right: 0,
-  bottom: 0,
-  justifyContent: "space-between",
 });
 
 const ContentContainer = styled("div")({
@@ -24,14 +18,14 @@ const ContentContainer = styled("div")({
   justifyContent: "center",
   alignItems: "center",
   padding: "20px",
-  position: "relative",
 });
 
 const LoginContainer = styled("main")({
-  width: 400, 
+  width: "100%",
+  maxWidth: 400,
   borderRadius: "10px",
-  backgroundColor: "#f0f0f0", 
-  boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)", 
+  backgroundColor: "#f0f0f0",
+  boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
 });
 
 const LoginPage: React.FC<LoginProps> = () => {

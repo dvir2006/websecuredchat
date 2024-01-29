@@ -3,13 +3,13 @@ import { Box, Button, TextField, Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { PostRequest, apiUrl } from '../../services/Server';
 import { error, otp } from '../../utils/signals';
-import { TwoFactorAuthFormProps } from '../../utils/types'
+import { TwoFactorAuthFormProps } from '../../utils/types';
 import { useAuth } from '../../context/AuthContext';
 
 export const TwoFactorAuthForm: React.FC<TwoFactorAuthFormProps> = ({ userId, onVerificationFail }) => {
   const navigate = useNavigate();
   const [canDisplayError, setCanDisplayError] = useState(false);
-  const {login} = useAuth();
+  const { login } = useAuth();
 
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -23,7 +23,7 @@ export const TwoFactorAuthForm: React.FC<TwoFactorAuthFormProps> = ({ userId, on
 
       if (response.ok) {
         otp.value = '';
-        const data =await response.json();
+        const data = await response.json();
         localStorage.setItem('jwtToken', data.token);
         login(data.userId);
         navigate('/');
@@ -41,20 +41,26 @@ export const TwoFactorAuthForm: React.FC<TwoFactorAuthFormProps> = ({ userId, on
 
   return (
     <div>
-      <Box component="form" onSubmit={onSubmit}>
-        <TextField
-          required
-          value={otp}
-          id="outlined-required"
-          label="One-Time Password (OTP)"
-          type="text"
-          onChange={(e) => (otp.value = e.target.value)}
-        />
+      <form onSubmit={onSubmit}>
+        <Box sx={{ display: 'flex', gap: '16px' }}>
+          <TextField
+            required
+            value={otp}
+            id="outlined-required"
+            label="One-Time Password (OTP)"
+            type="text"
+            onChange={(e) => (otp.value = e.target.value)}
+            InputProps={{
+              sx: { height: '40px' },
+            }}
+            sx={{ '& .MuiOutlinedInput-root': { height: '40px' } }}
+          />
+          <Button variant="contained" type="submit" sx={{ height: '40px' }}>
+            Verify OTP
+          </Button>
+        </Box>
         {canDisplayError && <Alert severity="error">{error.value}</Alert>}
-        <Button variant="contained" type="submit">
-          Verify OTP
-        </Button>
-      </Box>
+      </form>
     </div>
   );
 };
