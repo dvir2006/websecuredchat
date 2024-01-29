@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Alert, Box, Button, Link, TextField, IconButton, InputAdornment } from "@mui/material";
+import { Alert, Box, Button, Link, TextField, IconButton, InputAdornment, Typography } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { RegisterProps } from "../../utils/types";
 import { username, email, password, error } from "../../utils/signals";
@@ -35,7 +35,9 @@ const Register: React.FC<RegisterProps> = () => {
             justifyContent="center"
             alignItems="center"
             height="auto"
+            padding="5%"
         >
+            <Typography variant="h4" gutterBottom>Register</Typography>
             <Box
                 component="form"
                 onSubmit={onSubmit}
@@ -90,6 +92,7 @@ const Register: React.FC<RegisterProps> = () => {
                 />
                 {canDisplayError && <Alert severity="error">{error.value}</Alert>}
                 <Link href="/login" variant="body2">Already have an account? Click here to login.</Link>
+                <Box sx={{ mb: 1 }} />
                 <Button variant="contained" type="submit" fullWidth>Submit</Button>
             </Box>
         </Box>
