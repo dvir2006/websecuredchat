@@ -116,15 +116,14 @@ const ChatApp: React.FC<MainPageProps> = ({user}) => {
     };
     
     return (
-        <div>
-            <h1>Hello {user}</h1>
-            <CreateGroupDialog/>
-            <div>
-                <ChatList open={isSidebarOpen} onClose={toggleSidebar} users={users} groups={groups} onChat={fetchChat} onGroup={fetchGroupChat} />
-                <ChatWindow chat={chat} currUser={currUser} onSendMessage={sendMessageToServer} isGroup={isGroup} users={users} fetchChat={fetchGroupChat}/>
-                <Button variant="contained" onClick={toggleSidebar}>Toggle Sidebar</Button>
+        <div >
+            <Button variant="outlined" onClick={toggleSidebar} style={{ marginRight: '8px' }}>Change Chat</Button>
+            <div style={{display: 'inline', margin: '0 8px' }}>
+               <CreateGroupDialog/>
             </div>
-            <Button variant="contained" onClick={onLogout}>Logout</Button>
+            <Button variant="contained" onClick={onLogout} style={{ marginLeft: '8px' }}>Logout</Button>
+            <ChatList open={isSidebarOpen} onClose={toggleSidebar} users={users} groups={groups} onChat={fetchChat} onGroup={fetchGroupChat} />
+            {currUser.username ? <ChatWindow chat={chat} currUser={currUser} onSendMessage={sendMessageToServer} isGroup={isGroup} users={users} fetchChat={fetchGroupChat}/> : <h1>Hello {user}</h1>}            
         </div>
     );
 }
