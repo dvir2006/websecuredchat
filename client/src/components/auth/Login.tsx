@@ -71,7 +71,7 @@ const Login: React.FC<LoginProps> = () => {
             height="auto"
             padding="5%"
         >
-            <Typography variant="h4" gutterBottom>Login</Typography>
+            {require2FA? <Typography variant="h4" gutterBottom>2FA</Typography> : <Typography variant="h4" gutterBottom>Login</Typography>}
             {!require2FA && (
                 <Box
                     component="form"
