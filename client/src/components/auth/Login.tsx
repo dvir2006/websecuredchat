@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Box, Button, Link, TextField, IconButton, InputAdornment, Typography } from "@mui/material";
 import { Alert } from "@mui/material";
 import { LoginProps } from "../../utils/types";
-import { email, error, password } from "../../utils/signals";
+import { email, error, password, username } from "../../utils/signals";
 import { PostRequest, apiUrl } from "../../services/Server";
 import { createRef, useEffect } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
@@ -46,6 +46,7 @@ const Login: React.FC<LoginProps> = () => {
                 if (data.require2FA) {
                     setRequire2FA(true);
                     setUserId(data.userId);
+                    username.value = data.username;
                 } else {
                     const token = data.token;
                     localStorage.setItem('jwtToken', token);
