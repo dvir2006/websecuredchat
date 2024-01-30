@@ -24,8 +24,9 @@ const LoginContainer = styled("main")({
   width: "100%",
   maxWidth: 400,
   borderRadius: "10px",
-  backgroundColor: "#f0f0f0",
-  boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
+  backgroundColor: "#f8f9fa",
+  boxShadow: "0px 5px 3px rgba(0, 0, 0, 0.1)",
+  
 });
 
 const LoginPage: React.FC<LoginProps> = () => {

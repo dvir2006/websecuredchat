@@ -28,10 +28,11 @@ const ContentContainer = styled("div")({
 });
 
 const RegisterContainer = styled("main")({
-    width: 400, 
-    borderRadius: "10px",
-    backgroundColor: "#f0f0f0", 
-    boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)", 
+  width: "100%",
+  maxWidth: 400,
+  borderRadius: "10px",
+  backgroundColor: "#f8f9fa",
+  boxShadow: "0px 5px 3px rgba(0, 0, 0, 0.1)",
 });
 
 const RegisterPage: React.FC<RegisterProps> = () => {
