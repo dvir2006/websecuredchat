@@ -1,5 +1,6 @@
 import React, { createContext, useContext, ReactNode, useState, useEffect } from 'react';
 import { ProtectedGetRequest, apiUrl } from '../services/Server';
+import { username } from '../utils/signals';
 
 interface AuthContextData {
   isAuthenticated: boolean;
@@ -27,8 +28,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 const response = await ProtectedGetRequest(`${apiUrl}/auth/check-user`,jwtToken);
                 if(response.ok || response.status === 304) {
                     setIsAuthenticated(true);
-                    const uid = (await response.json()).userId;
+                    const data=await response.json();
+                    const uid = data.userId;
                     setUserId(uid);
+                    username.value = data.username;
                 }
                 else{
                     setIsAuthenticated(false);

@@ -123,7 +123,7 @@ const ChatApp: React.FC<MainPageProps> = ({user}) => {
             </div>
             <Button variant="contained" onClick={onLogout} style={{ marginLeft: '8px' }}>Logout</Button>
             <ChatList open={isSidebarOpen} onClose={toggleSidebar} users={users} groups={groups} onChat={fetchChat} onGroup={fetchGroupChat} />
-            {currUser.username ? <ChatWindow chat={chat} currUser={currUser} onSendMessage={sendMessageToServer} isGroup={isGroup} users={users} fetchChat={fetchGroupChat}/> : <h1>Hello {user}</h1>}            
+            {currUser.username ? <ChatWindow chat={chat} currUser={currUser} onSendMessage={sendMessageToServer} isGroup={isGroup} users={users} fetchChat={fetchGroupChat}/> : <h1>Hello {username.value}</h1>}            
         </div>
     );
 }
