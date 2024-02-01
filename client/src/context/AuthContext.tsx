@@ -29,7 +29,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 if(response.ok || response.status === 304) {
                     setIsAuthenticated(true);
                     const data=await response.json();
-                    const uid = data.userId;
+                    const uid = data.userId._id;
                     setUserId(uid);
                     username.value = data.username;
                 }

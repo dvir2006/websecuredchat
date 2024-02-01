@@ -13,8 +13,8 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ chat, currUser, onSendMessage, 
     const [newMessage, setNewMessage] = useState('');
   
     const idToName = (sender: string) => {
+      if (userId === sender) return username.value;
       if (!isGroup) {
-        if (userId === sender) return username.value;
         return currUser.username;
       }
       for (const user of users) {

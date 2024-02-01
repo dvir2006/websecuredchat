@@ -9,7 +9,7 @@ authRouter.post('/login', authController.loginUser);
 
 authRouter.get('/check-user',authCheckMiddleware , authController.checkUserAuth);
 
-authRouter.get('/all-users', authController.getAllUsers);
+authRouter.get('/all-users', authCheckMiddleware, authController.getAllUsers);
 
 authRouter.post('/verify-otp', authController.verifyOTP);
 

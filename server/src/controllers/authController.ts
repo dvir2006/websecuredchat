@@ -70,9 +70,10 @@ export const loginUser = async (req: Request, res: Response) =>
 
 export const getAllUsers = async (req: Request, res: Response) => {
     try {
+        const { userId } = req.body;
         const users = await UserModel.find({}, '-password');
-
-        res.status(200).json(users);
+        const filteredUsers = users.filter(user => user._id != userId._id);
+        res.status(200).json(filteredUsers);
     } catch (error) 
     {
         res.status(500).json({ message: 'Internal server error' });
@@ -82,7 +83,7 @@ export const getAllUsers = async (req: Request, res: Response) => {
 export const checkUserAuth = async (req: Request, res: Response) => {
     try {
         const { userId } = req.body;
-        res.status(200).json({ message: 'Valid user', userId: userId, username: getUsernameById(userId) });
+        res.status(200).json({ message: 'Valid user', userId: userId, username: await getUsernameById(userId) });
     } catch (error) 
     {
         res.status(500).json({ message: 'Internal server error' });
@@ -91,7 +92,7 @@ export const checkUserAuth = async (req: Request, res: Response) => {
 
 const getUsernameById = async (userId: string) => {
     try {
-        const user = await UserModel.findOne({ _id: userId });
+        const user = await UserModel.findById(userId);
         if (!user) {
             return null;
         }
