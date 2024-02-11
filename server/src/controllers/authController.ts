@@ -72,7 +72,7 @@ export const getAllUsers = async (req: Request, res: Response) => {
     try {
         const { userId } = req.body;
         const users = await UserModel.find({}, '-password');
-        const filteredUsers = users.filter(user => user._id != userId._id);
+        const filteredUsers = users.filter((user: any) => user._id != userId._id);
         res.status(200).json(filteredUsers);
     } catch (error) 
     {

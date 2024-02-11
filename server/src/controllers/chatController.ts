@@ -98,7 +98,7 @@ const getGroups = async (req: Request, res: Response) => {
         const { userId } = req.body;
         if(!await checkExistingUser(userId)) throw "";   
         const chats = await ChatModel.find({$and: [ { users: { $in: userId }}, { type: 'group' } ]});
-        const formattedChats = chats.map(chat => ({
+        const formattedChats = chats.map((chat: any) => ({
             name: chat.name,
             uid: chat.id
           }));
