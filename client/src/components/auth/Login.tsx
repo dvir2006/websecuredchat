@@ -72,7 +72,7 @@ const Login: React.FC<LoginProps> = () => {
             height="auto"
             padding="5%"
         >
-            {require2FA? <Typography variant="h4" gutterBottom>2FA</Typography> : <Typography variant="h4" gutterBottom>Login</Typography>}
+            {require2FA? <Typography variant="h4" gutterBottom color="textPrimary">2FA</Typography> : <Typography variant="h4" gutterBottom color="textPrimary">Login</Typography>}
             {!require2FA && (
                 <Box
                     component="form"
@@ -87,17 +87,18 @@ const Login: React.FC<LoginProps> = () => {
                     <TextField
                         required
                         value={email}
-                        id="outlined-required"
+                        id="outlined-basic"
                         type="email"
                         label="Email Address"
                         onChange={(e) => (email.value = e.target.value)}
                         fullWidth
-                        sx={{ mb: 2 }}
+                        sx={{ mb: 2 , bgcolor: 'background.default' }}
+                        variant="standard"
                     />
                     <TextField
                         required
                         value={password}
-                        id="outlined-required"
+                        id="outlined-basic"
                         label="Password"
                         type={showPassword ? "text" : "password"}
                         onChange={(e) => (password.value = e.target.value)}
@@ -115,7 +116,8 @@ const Login: React.FC<LoginProps> = () => {
                                 </InputAdornment>
                             )
                         }}
-                        sx={{ mb: 2 }}
+                        sx={{ mb: 2, bgcolor: 'background.default' }}
+                        variant="standard"
                     />
                     {canDisplayError && <Alert severity="error">{error.value}</Alert>}
                     <Box width="100%" display="flex" justifyContent="center" mb={2}>

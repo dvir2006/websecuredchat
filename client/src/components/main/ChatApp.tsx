@@ -1,4 +1,4 @@
-import { Button } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 import { username } from "../../utils/signals";
 import { MainPageProps } from "../../utils/types";
 import { useNavigate } from "react-router-dom";
@@ -123,7 +123,7 @@ const ChatApp: React.FC<MainPageProps> = ({user}) => {
             </div>
             <Button variant="contained" onClick={onLogout} style={{ marginLeft: '8px' }}>Logout</Button>
             <ChatList open={isSidebarOpen} onClose={toggleSidebar} users={users} groups={groups} onChat={fetchChat} onGroup={fetchGroupChat} />
-            {currUser.username ? <ChatWindow chat={chat} currUser={currUser} onSendMessage={sendMessageToServer} isGroup={isGroup} users={users} fetchChat={fetchGroupChat}/> : <h1>Hello {username.value}</h1>}            
+            {currUser.username ? <ChatWindow chat={chat} currUser={currUser} onSendMessage={sendMessageToServer} isGroup={isGroup} users={users} fetchChat={fetchGroupChat}/> : <Typography variant="h2" color="textPrimary">Hello {username.value}</Typography>}            
         </div>
     );
 }

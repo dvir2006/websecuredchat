@@ -1,7 +1,8 @@
 import React from "react";
-import { Box, Typography, Link } from "@mui/material";
+import { Box, Typography, useTheme } from "@mui/material";
 
 const Footer: React.FC = () => {
+  const theme = useTheme();
   return (
     <footer>
       <Box
@@ -9,7 +10,7 @@ const Footer: React.FC = () => {
           width: "100%",
           position: "sticky",
           bottom: 0,
-          bgcolor: "#f8f9fa", 
+          bgcolor: theme.palette.mode === 'light'? "#f8f9fa":"#000000", 
           color: "#343a40", 
           padding: "20px 0", 
           textAlign: "center",
@@ -20,7 +21,7 @@ const Footer: React.FC = () => {
         <Typography variant="h6" gutterBottom>
           Sigma
         </Typography>
-        <Typography variant="body2" color="textSecondary">
+        <Typography variant="body2">
           © {new Date().getFullYear()} All rights reserved.
         </Typography>
 

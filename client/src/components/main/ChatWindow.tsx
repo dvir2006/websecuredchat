@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Box, List, ListItem, ListItemText, TextField, Button, AppBar, Toolbar, Typography, Paper } from "@mui/material";
+import { Box, List, ListItem, ListItemText, TextField, Button, AppBar, Toolbar, Typography, Paper, useTheme } from "@mui/material";
 import { ChatWindowProps, MessageType } from "../../utils/types";
 import { formatDate } from "../../utils/formatDate";
 import { useAuth } from "../../context/AuthContext";
@@ -11,6 +11,7 @@ import RemoveUserFromGroupDialog from './RemoveUserFromGroupDialog';
 const ChatWindow: React.FC<ChatWindowProps> = ({ chat, currUser, onSendMessage, isGroup, users, fetchChat }) => {
     const { userId } = useAuth();
     const [newMessage, setNewMessage] = useState('');
+    const theme = useTheme();
   
     const idToName = (sender: string) => {
       if (userId === sender) return username.value;
@@ -44,7 +45,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ chat, currUser, onSendMessage, 
             <List style={{ minHeight: '55vh', maxHeight: '55vh', overflowY: 'auto',scrollbarWidth: 'thin', scrollbarColor: '#9dc8f3 #ffffff',msScrollbarBaseColor: "#fff" }}>
             {chat.messages.map((message: MessageType, index: number) => (
                 <ListItem key={index} style={{ display: 'flex', justifyContent: isCurrentUser(message.sender) ? 'flex-end' : 'flex-start' }}>
-                <Paper elevation={3} style={{ padding: '10px', borderRadius: '8px' , backgroundColor: isCurrentUser(message.sender) ? "#9dc8f3" : "#FFFFFF"}}>
+                <Paper elevation={3} style={{ padding: '10px', borderRadius: '8px' , backgroundColor: isCurrentUser(message.sender) ? (theme.palette.mode === 'light'? "#9dc8f3":"#1976D2") : (theme.palette.mode === 'light'? "#f8f9fa":"#000000")}}>
                     <ListItemText
                     primary={message.content}
                     secondary={`${idToName(message.sender)}, ${formatDate(new Date(message.timestamp))}`}

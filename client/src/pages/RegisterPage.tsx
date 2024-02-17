@@ -3,9 +3,11 @@ import Header from "../components/const/Header";
 import Footer from "../components/const/Footer";
 import Register from "../components/auth/Register";
 import { RegisterProps } from "../utils/types";
-import { styled } from "@mui/system";
+import { Box, styled } from "@mui/system";
 
-const RegisterPageContainer = styled("div")({
+const RegisterPage: React.FC<RegisterProps> = () => {
+  return (
+    <Box sx = {{
     display: "flex",
     flexDirection: "column",
     minHeight: "100vh",
@@ -15,37 +17,28 @@ const RegisterPageContainer = styled("div")({
     right: 0,
     bottom: 0,
     justifyContent: "space-between",
-});
-
-const ContentContainer = styled("div")({
-    flex: 1,
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-    padding: "20px",
-    position: "relative",
-});
-
-const RegisterContainer = styled("main")({
-  width: "100%",
-  maxWidth: 400,
-  borderRadius: "10px",
-  backgroundColor: "#f8f9fa",
-  boxShadow: "0px 5px 3px rgba(0, 0, 0, 0.1)",
-});
-
-const RegisterPage: React.FC<RegisterProps> = () => {
-  return (
-    <RegisterPageContainer>
+    bgcolor: "background.default"}}>
       <Header />
-      <ContentContainer>
-        <RegisterContainer>
+      <Box sx = {{
+      flex: 1,
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
+      alignItems: "center",
+      padding: "20px",
+      position: "relative",
+      }}>
+        <Box sx = {{
+        width: "100%",
+        maxWidth: 400,
+        borderRadius: "10px",
+        boxShadow: "0px 5px 3px rgba(0, 0, 0, 0.1)",
+        }}>
           <Register />
-        </RegisterContainer>
-      </ContentContainer>
+        </Box>
+      </Box>
       <Footer />
-    </RegisterPageContainer>
+    </Box>
   );
 };
 

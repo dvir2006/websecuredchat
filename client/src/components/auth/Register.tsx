@@ -37,7 +37,7 @@ const Register: React.FC<RegisterProps> = () => {
             height="auto"
             padding="5%"
         >
-            <Typography variant="h4" gutterBottom>Register</Typography>
+            <Typography variant="h4" gutterBottom color="textPrimary">Register</Typography>
             <Box
                 component="form"
                 onSubmit={onSubmit}
@@ -51,26 +51,28 @@ const Register: React.FC<RegisterProps> = () => {
                 <TextField
                     required
                     value={username}
-                    id="outlined-required"
+                    id="outlined-basic"
                     label="Username"
                     onChange={(e) => (username.value = e.target.value)}
                     fullWidth
                     sx={{ mb: 2 }}
+                    variant="standard"
                 />
                 <TextField
                     required
                     value={email}
-                    id="outlined-required"
+                    id="outlined-basic"
                     type="email"
                     label="Email Address"
                     onChange={(e) => (email.value = e.target.value)}
                     fullWidth
                     sx={{ mb: 2 }}
+                    variant="standard"
                 />
                 <TextField
                     required
                     value={password}
-                    id="outlined-required"
+                    id="outlined-basic"
                     label="Password"
                     type={showPassword ? "text" : "password"}
                     onChange={(e) => (password.value = e.target.value)}
@@ -89,6 +91,7 @@ const Register: React.FC<RegisterProps> = () => {
                         )
                     }}
                     sx={{ mb: 2 }}
+                    variant="standard"
                 />
                 {canDisplayError && <Alert severity="error">{error.value}</Alert>}
                 <Link href="/login" variant="body2">Already have an account? Click here to login.</Link>

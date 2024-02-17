@@ -53,7 +53,8 @@ export const TwoFactorAuthForm: React.FC<TwoFactorAuthFormProps> = ({ userId, on
             InputProps={{
               sx: { height: '40px' },
             }}
-            sx={{ '& .MuiOutlinedInput-root': { height: '40px' } }}
+            sx={{ '& .MuiOutlinedInput-root': { height: '40px' }, bgcolor: 'background.default' }}
+            variant="outlined"
           />
           <Button variant="contained" type="submit" sx={{ height: '40px' }}>
             Verify OTP

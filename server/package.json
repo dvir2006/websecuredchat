@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@mui/icons-material": "^5.15.10",
     "@sendgrid/mail": "^8.1.0",
     "@types/express": "^4.17.20",
     "bcrypt": "^5.1.1",
