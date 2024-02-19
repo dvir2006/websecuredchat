@@ -7,7 +7,7 @@ import { username } from "../../utils/signals";
 import { PostRequest, ProtectedPostRequest , apiUrl } from "../../services/Server";
 import AddUserToGroupDialog from './AddUserToGroupDialog';
 import RemoveUserFromGroupDialog from './RemoveUserFromGroupDialog';
-
+import SendIcon from '@mui/icons-material/Send';
 const ChatWindow: React.FC<ChatWindowProps> = ({ chat, currUser, onSendMessage, isGroup, users, fetchChat }) => {
     const { userId } = useAuth();
     const [newMessage, setNewMessage] = useState('');
@@ -69,7 +69,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ chat, currUser, onSendMessage, 
             onClick={handleMessageSend}
             style={{ marginLeft: '10px', minHeight: '55px' }}
           >
-            Send
+            <SendIcon/>
           </Button>
         </Box>
       </Box>
