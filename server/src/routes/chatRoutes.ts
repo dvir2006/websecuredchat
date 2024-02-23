@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
 import chatController from '../controllers/chatController';
 import authCheckMiddleware from '../middleware/authMiddleware';
 

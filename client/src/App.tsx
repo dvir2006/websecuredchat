@@ -1,16 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import PageNotFound from './pages/PageNotFound';
 import LoginPage from './pages/LoginPage';
 import MainPage from './pages/MainPage';
-import { auth, username } from './utils/signals';
+import {  username } from './utils/signals';
 import RegisterPage from './pages/RegisterPage';
-import { GetRequest, ProtectedGetRequest, apiUrl } from './services/Server';
-import { effect } from '@preact/signals';
-import { useComputed } from '@preact/signals-react';
-import { useContext } from "preact/hooks";
 import { useAuth } from './context/AuthContext';
-import { useTheme, createTheme, ThemeProvider } from '@mui/material/styles';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useMediaQuery } from '@mui/material';
 
 export const ColorModeContext = React.createContext({toggleColorMode: () => {} });

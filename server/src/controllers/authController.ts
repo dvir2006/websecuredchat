@@ -4,7 +4,6 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import speakeasy from 'speakeasy';
 import nodemailer from 'nodemailer';
-import sgMail from '@sendgrid/mail';
 
 export const registerUser = async (req: Request, res: Response) => {
     const { username, email, password } = req.body;
